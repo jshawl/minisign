@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name        = 'minisign'
-  s.version     = '0.0.3'
+  s.version     = '0.0.4'
   s.summary     = 'Minisign, in Ruby!'
   s.description = 'Verify minisign signatures'
   s.authors     = ['Jesse Shawl']
