@@ -1,4 +1,4 @@
-# Minisign.rb
+# Minisign
 
 A rubygem for verifying [Minisign](http://jedisct1.github.io/minisign/) signatures.
 

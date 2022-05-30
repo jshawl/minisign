@@ -2,5 +2,8 @@
 
 source 'https://rubygems.org'
 
+gem 'rspec', '~> 3.1'
 gem 'rubocop', '~> 1.30'
+gem 'rubocop-rspec', '~> 2.10'
+gem 'simplecov', '~> 0.21', require: false
 gemspec
