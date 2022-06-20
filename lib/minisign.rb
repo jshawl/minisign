@@ -60,6 +60,9 @@ module Minisign
       @verify_key = Ed25519::VerifyKey.new(@public_key)
     end
 
+    def key_id
+    end
+
     # Verify a message's signature
     #
     # @param sig [Minisign::Signature]

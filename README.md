@@ -8,12 +8,20 @@ A rubygem for verifying [Minisign](http://jedisct1.github.io/minisign/) signatur
 gem install minisign
 ```
 
+### Verify a signature
+
 ```rb
 require 'minisign'
-pk = Minisign::PublicKey.new('RWTg6JXWzv6GDtDphRQ/x7eg0LaWBcTxPZ7i49xEeiqXVcR+r79OZRWM')
-signature = Minisign::Signature.new(File.read("test/example.txt.minisig"))
+public_key = Minisign::PublicKey.new('RWTg6JXWzv6GDtDphRQ/x7eg0LaWBcTxPZ7i49xEeiqXVcR+r79OZRWM')
 message = File.read("test/example.txt")
-pk.verify(signature, message)
+signature = Minisign::Signature.new(File.read("test/example.txt.minisig"))
+public_key.verify(signature, message)
+```
+
+The above is equivalent to:
+
+```
+minisign -Vm test/example.txt -P RWTg6JXWzv6GDtDphRQ/x7eg0LaWBcTxPZ7i49xEeiqXVcR+r79OZRWM
 ```
 
 ## Local Development
