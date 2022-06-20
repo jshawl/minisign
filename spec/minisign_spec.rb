@@ -18,3 +18,10 @@ describe Minisign::PublicKey do
     expect { @pk.verify(@signature, @message) }.to raise_error('Comment signature verification failed')
   end
 end
+
+describe Minisign::Signature do
+  it "has a key id" do
+    @signature = Minisign::Signature.new(File.read('test/example.txt.minisig'))
+    expect(@signature.key_id).to eq("E86FECED695E8E0")
+  end
+end
