@@ -21,3 +21,9 @@ pk.verify(signature, message)
 ```
 irb -Ilib -rminisign
 ```
+
+## Local Documentation
+
+```
+yard server --reload
+```
