@@ -9,25 +9,33 @@ require 'openssl'
 module Minisign
   # Parse a .minisig file's contents
   class Signature
-    attr_reader :signature, :comment, :comment_signature, :key_id
-
-    # @!attribute [r] signature
-    #   @return [String] the ed25519 verify key
-    # @!attribute [r] comment_signature
-    #   @return [String] the signature for the trusted comment
-    # @!attribute [r] comment
-    #   @return [String] the trusted comment
-
     # @param str [String] The contents of the .minisig file
     # @example
     #   Minisign::Signature.new(File.read('test/example.txt.minisig'))
     def initialize(str)
-      lines = str.split("\n")
-      sig = Base64.decode64(lines[1])
-      @key_id = sig[2..9].bytes.map{|c| c.to_s(16)}.reverse.join('').upcase
-      @signature = sig[10..]
-      @comment = lines[2].split('trusted comment: ')[1]
-      @comment_signature = Base64.decode64(lines[3])
+      @lines = str.split("\n")
+    end
+
+    def key_id
+      encoded_signature[2..9].bytes.map { |c| c.to_s(16) }.reverse.join('').upcase
+    end
+
+    def signature
+      encoded_signature[10..]
+    end
+
+    def comment
+      @lines[2].split('trusted comment: ')[1]
+    end
+
+    def comment_signature
+      Base64.decode64(@lines[3])
+    end
+
+    private
+
+    def encoded_signature
+      Base64.decode64(@lines[1])
     end
   end
 
