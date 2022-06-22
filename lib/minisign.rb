@@ -21,7 +21,7 @@ module Minisign
     #   Minisign::Signature.new(File.read('test/example.txt.minisig')).key_id
     #   #=> "E86FECED695E8E0"
     def key_id
-      encoded_signature[2..9].bytes.map { |c| c.to_s(16) }.reverse.join('').upcase
+      encoded_signature[2..9].bytes.map { |c| c.to_s(16) }.reverse.join.upcase
     end
 
     # @return [String] the trusted comment
@@ -60,8 +60,7 @@ module Minisign
       @verify_key = Ed25519::VerifyKey.new(@public_key)
     end
 
-    def key_id
-    end
+    def key_id; end
 
     # Verify a message's signature
     #
