@@ -9,23 +9,42 @@ require 'openssl'
 module Minisign
   # Parse a .minisig file's contents
   class Signature
-    attr_reader :signature, :comment, :comment_signature
-
-    # @!attribute [r] signature
-    #   @return [String] the ed25519 verify key
-    # @!attribute [r] comment_signature
-    #   @return [String] the signature for the trusted comment
-    # @!attribute [r] comment
-    #   @return [String] the trusted comment
-
     # @param str [String] The contents of the .minisig file
     # @example
     #   Minisign::Signature.new(File.read('test/example.txt.minisig'))
     def initialize(str)
-      lines = str.split("\n")
-      @signature = Base64.decode64(lines[1])[10..]
-      @comment = lines[2].split('trusted comment: ')[1]
-      @comment_signature = Base64.decode64(lines[3])
+      @lines = str.split("\n")
+    end
+
+    # @return [String] the key id
+    # @example
+    #   Minisign::Signature.new(File.read('test/example.txt.minisig')).key_id
+    #   #=> "E86FECED695E8E0"
+    def key_id
+      encoded_signature[2..9].bytes.map { |c| c.to_s(16) }.reverse.join.upcase
+    end
+
+    # @return [String] the trusted comment
+    # @example
+    #   Minisign::Signature.new(File.read('test/example.txt.minisig')).trusted_comment
+    #   #=> "timestamp:1653934067\tfile:example.txt\thashed"
+    def trusted_comment
+      @lines[2].split('trusted comment: ')[1]
+    end
+
+    def trusted_comment_signature
+      Base64.decode64(@lines[3])
+    end
+
+    # @return [String] the signature
+    def signature
+      encoded_signature[10..]
+    end
+
+    private
+
+    def encoded_signature
+      Base64.decode64(@lines[1])
     end
   end
 
@@ -37,8 +56,17 @@ module Minisign
     # @example
     #   Minisign::PublicKey.new('RWTg6JXWzv6GDtDphRQ/x7eg0LaWBcTxPZ7i49xEeiqXVcR+r79OZRWM')
     def initialize(str)
-      @public_key = Base64.strict_decode64(str)[10..]
+      @decoded = Base64.strict_decode64(str)
+      @public_key = @decoded[10..]
       @verify_key = Ed25519::VerifyKey.new(@public_key)
+    end
+
+    # @return [String] the key id
+    # @example
+    #   Minisign::PublicKey.new('RWTg6JXWzv6GDtDphRQ/x7eg0LaWBcTxPZ7i49xEeiqXVcR+r79OZRWM').key_id
+    #   #=> "E86FECED695E8E0"
+    def key_id
+      @decoded[2..9].bytes.map { |c| c.to_s(16) }.reverse.join.upcase
     end
 
     # Verify a message's signature
@@ -50,13 +78,20 @@ module Minisign
     # @raise RuntimeError on tampered trusted comments
     def verify(sig, message)
       blake = OpenSSL::Digest.new('BLAKE2b512')
+      ensure_matching_key_ids(sig.key_id, key_id)
       @verify_key.verify(sig.signature, blake.digest(message))
       begin
-        @verify_key.verify(sig.comment_signature, sig.signature + sig.comment)
+        @verify_key.verify(sig.trusted_comment_signature, sig.signature + sig.trusted_comment)
       rescue Ed25519::VerifyError
         raise 'Comment signature verification failed'
       end
-      "Signature and comment signature verified\nTrusted comment: #{sig.comment}"
+      "Signature and comment signature verified\nTrusted comment: #{sig.trusted_comment}"
+    end
+
+    private
+
+    def ensure_matching_key_ids(key_id1, key_id2)
+      raise "Signature key id is #{key_id1}\nbut the key id in the public key is #{key_id2}" unless key_id1 == key_id2
     end
   end
 end
