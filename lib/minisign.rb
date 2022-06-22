@@ -88,6 +88,8 @@ module Minisign
       "Signature and comment signature verified\nTrusted comment: #{sig.trusted_comment}"
     end
 
+    private
+
     def ensure_matching_key_ids(key_id1, key_id2)
       raise "Signature key id is #{key_id1}\nbut the key id in the public key is #{key_id2}" unless key_id1 == key_id2
     end
