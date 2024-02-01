@@ -3,5 +3,6 @@
 require 'ed25519'
 require 'base64'
 require 'openssl'
-require 'signature'
-require 'public_key'
+
+require 'minisign/public_key'
+require 'minisign/signature'

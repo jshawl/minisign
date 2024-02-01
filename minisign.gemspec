@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.description = 'Verify minisign signatures'
   s.authors     = ['Jesse Shawl']
   s.email       = 'jesse@jesse.sh'
-  s.files       = ['lib/minisign.rb']
+  s.files       = Dir['lib/**/*']
   s.homepage    =
     'https://rubygems.org/gems/minisign'
   s.license = 'MIT'
