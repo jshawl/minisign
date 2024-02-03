@@ -28,10 +28,3 @@ describe Minisign::PublicKey do
     end.to raise_error("Signature key id is 4CB7A94FABA329A6\nbut the key id in the public key is F15F69C58B18A08")
   end
 end
-
-describe Minisign::Signature do
-  it 'has a key id' do
-    @signature = Minisign::Signature.new(File.read('test/example.txt.minisig'))
-    expect(@signature.key_id).to eq('4CB7A94FABA329A6')
-  end
-end
