@@ -1,4 +1,5 @@
 coverage
 doc
 .yardoc
-test/generated.txt.minisig
+test/generated/*
+!test/generated/.keep

@@ -53,12 +53,14 @@ describe Minisign::PrivateKey do
 
   describe 'sign' do
     it 'signs a file' do
-      message = File.read("test/generated.txt")
+      Dir.glob("test/generated/*").each { |file| File.delete(file)}
+      filename = "#{SecureRandom.uuid}.txt"
+      message = SecureRandom.uuid
+      File.write("test/generated/#{filename}", message)
       signature = @private_key.sign(message)
-      File.write("test/generated.txt.minisig", signature)
+      File.write("test/generated/#{filename}.minisig", signature)
       @signature = Minisign::Signature.new(signature)
       @public_key = Minisign::PublicKey.new("RWSmKaOrT6m3TGwjwBovgOmlhSbyBUw3hyhnSOYruHXbJa36xHr8rq2M")
-      p @public_key.verify(@signature, message)
       expect(@public_key.verify(@signature, message)).to match("Signature and comment signature verified")
     end
   end
