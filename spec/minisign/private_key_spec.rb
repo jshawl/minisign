@@ -4,7 +4,7 @@ require 'rbnacl'
 describe Minisign::PrivateKey do
   describe '.from_file' do
     before(:all) do
-      @private_key = Minisign::PrivateKey.from_file('test/minisign.key', 'password')
+      @private_key = Minisign::PrivateKey.new('test/minisign.key', 'password')
     end
 
     it 'parses the signature_algorithm' do
@@ -38,12 +38,12 @@ describe Minisign::PrivateKey do
 
     it 'parses the public key' do
       expect(@private_key.public_key).to eq([108, 35, 192, 26, 47, 128, 233, 165, 133, 38, 242, 5, 76, 55, 135, 40,
-                                             103, 72, 230, 43, 184, 117, 219, 37, 173, 250, 196, 122, 252, 174, 173, 140])
+                                             103, 72, 230, 43, 184, 117, 219, 37, 173, 250, 196, 122, 252, 174, 173, 140]) # rubocop:disable Layout/LineLength
     end
 
     it 'parses the secret key' do
       expect(@private_key.secret_key).to eq([65, 87, 110, 33, 168, 130, 118, 100, 249, 200, 160, 167, 47, 59, 141,
-                                             122, 156, 38, 80, 199, 139, 1, 21, 18, 116, 110, 204, 131, 199, 202, 181, 87])
+                                             122, 156, 38, 80, 199, 139, 1, 21, 18, 116, 110, 204, 131, 199, 202, 181, 87]) # rubocop:disable Layout/LineLength
     end
 
     it 'parses the checksum' do
