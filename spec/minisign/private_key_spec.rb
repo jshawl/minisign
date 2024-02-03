@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 describe Minisign::PrivateKey do
-  describe '.new' do
-    before(:all) do
-      @private_key = Minisign::PrivateKey.new(File.read('test/minisign.key'), 'password')
-    end
+  before(:all) do
+    @private_key = Minisign::PrivateKey.new(File.read('test/minisign.key'), 'password')
+  end
 
+  describe '.new' do
     it 'parses the signature_algorithm' do
       expect(@private_key.signature_algorithm).to eq('Ed')
     end
@@ -48,6 +48,20 @@ describe Minisign::PrivateKey do
     it 'parses the checksum' do
       expect(@private_key.checksum).to eq([19, 146, 239, 121, 33, 164, 216, 219, 8, 104, 111, 52, 198, 78, 21, 236,
                                            113, 255, 174, 47, 39, 216, 61, 198, 233, 161, 233, 143, 84, 246, 255, 150])
+    end
+  end
+
+  describe 'sign' do
+    it 'signs a file' do
+      Dir.glob('test/generated/*').each { |file| File.delete(file) }
+      filename = "#{SecureRandom.uuid}.txt"
+      message = SecureRandom.uuid
+      File.write("test/generated/#{filename}", message)
+      signature = @private_key.sign(filename, message)
+      File.write("test/generated/#{filename}.minisig", signature)
+      @signature = Minisign::Signature.new(signature)
+      @public_key = Minisign::PublicKey.new('RWSmKaOrT6m3TGwjwBovgOmlhSbyBUw3hyhnSOYruHXbJa36xHr8rq2M')
+      expect(@public_key.verify(@signature, message)).to match('Signature and comment signature verified')
     end
   end
 end

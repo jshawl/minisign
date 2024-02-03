@@ -38,3 +38,5 @@ jobs:
       run: bundle exec rubocop
     - name: Run tests
       run: bundle exec rspec
+    - name: Test against jedisct1/minisign
+      run: ./spec/verify.sh

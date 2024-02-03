@@ -6,9 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Verify key id match
+- Create signatures
 - Parse private key
 - Use ruby 2.7
+  
+## [0.0.7] - 2022-06-22
+
+### Changed
+- Update bundler version
+  
+## [0.0.6] - 2022-06-22
+
+### Added
+- Verify key id match
 
 ## [0.0.5] - 2022-05-30
 

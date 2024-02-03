@@ -1,3 +1,5 @@
 coverage
 doc
 .yardoc
+test/generated/*
+!test/generated/.keep
