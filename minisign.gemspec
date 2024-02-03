@@ -12,6 +12,7 @@ Gem::Specification.new do |s|
     'https://rubygems.org/gems/minisign'
   s.license = 'MIT'
   s.add_runtime_dependency 'ed25519', '~> 1.3'
+  s.add_runtime_dependency 'rbnacl', '~> 7.1'
   s.required_ruby_version = '>= 2.7'
   s.metadata['rubygems_mfa_required'] = 'true'
 end

@@ -1,6 +1,6 @@
 # Minisign
 
-A rubygem for verifying [Minisign](http://jedisct1.github.io/minisign/) signatures.
+A rubygem for creating and verifying [Minisign](http://jedisct1.github.io/minisign/) signatures.
 
 ## Installation & Usage
 
