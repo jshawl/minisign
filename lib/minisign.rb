@@ -6,3 +6,4 @@ require 'openssl'
 
 require 'minisign/public_key'
 require 'minisign/signature'
+require 'minisign/private_key'
