@@ -36,5 +36,21 @@ module Minisign
       end
       [xored[0..7], xored[8..39], xored[40..71], xored[72..103]]
     end
+
+    def sign message
+      signing_key = Ed25519::SigningKey.new(@secret_key.pack("C*"))
+      blake = OpenSSL::Digest.new('BLAKE2b512')
+      signature = signing_key.sign(blake.digest(message))
+      message_signature = "ED#{@key_id.pack("C*")}#{signature}"
+      trusted_comment = "timestamp:#{Time.now.to_i}\tfile:generated.txt\thashed"
+      global_signature = signing_key.sign("#{signature}#{trusted_comment}")
+      [
+        "untrusted comment: <arbitrary text>",
+        Base64.strict_encode64(message_signature),
+        "trusted comment: #{trusted_comment}",
+        Base64.strict_encode64(global_signature),
+        ""
+    ].join("\n")
+    end
   end
 end
