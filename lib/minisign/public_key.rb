@@ -3,6 +3,7 @@
 module Minisign
   # Parse ed25519 verify key from minisign public key
   class PublicKey
+    include Utils
     # Parse the ed25519 verify key from the minisign public key
     #
     # @param str [String] The minisign public key
@@ -30,9 +31,8 @@ module Minisign
     # @raise Ed25519::VerifyError on invalid signatures
     # @raise RuntimeError on tampered trusted comments
     def verify(sig, message)
-      blake = OpenSSL::Digest.new('BLAKE2b512')
       ensure_matching_key_ids(sig.key_id, key_id)
-      @verify_key.verify(sig.signature, blake.digest(message))
+      @verify_key.verify(sig.signature, blake2b512(message))
       begin
         @verify_key.verify(sig.trusted_comment_signature, sig.signature + sig.trusted_comment)
       rescue Ed25519::VerifyError

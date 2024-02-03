@@ -3,6 +3,7 @@
 module Minisign
   # Parse ed25519 signing key from minisign private key
   class PrivateKey
+    include Utils
     attr_reader :signature_algorithm, :kdf_algorithm, :cksum_algorithm, :kdf_salt, :kdf_opslimit, :kdf_memlimit,
                 :key_id, :public_key, :secret_key, :checksum
 
@@ -39,10 +40,6 @@ module Minisign
 
     def ed25519_signing_key
       Ed25519::SigningKey.new(@secret_key.pack('C*'))
-    end
-
-    def blake2b512(message)
-      OpenSSL::Digest.new('BLAKE2b512').digest(message)
     end
 
     def sign(filename, message)
