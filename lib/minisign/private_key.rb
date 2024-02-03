@@ -45,9 +45,9 @@ module Minisign
       OpenSSL::Digest.new('BLAKE2b512').digest(message)
     end
 
-    def sign(message)
+    def sign(filename, message)
       signature = ed25519_signing_key.sign(blake2b512(message))
-      trusted_comment = "timestamp:#{Time.now.to_i}\tfile:generated.txt\thashed"
+      trusted_comment = "timestamp:#{Time.now.to_i}\tfile:#{filename}\thashed"
       global_signature = ed25519_signing_key.sign("#{signature}#{trusted_comment}")
       [
         'untrusted comment: <arbitrary text>',

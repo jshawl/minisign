@@ -57,7 +57,7 @@ describe Minisign::PrivateKey do
       filename = "#{SecureRandom.uuid}.txt"
       message = SecureRandom.uuid
       File.write("test/generated/#{filename}", message)
-      signature = @private_key.sign(message)
+      signature = @private_key.sign(filename, message)
       File.write("test/generated/#{filename}.minisig", signature)
       @signature = Minisign::Signature.new(signature)
       @public_key = Minisign::PublicKey.new('RWSmKaOrT6m3TGwjwBovgOmlhSbyBUw3hyhnSOYruHXbJa36xHr8rq2M')
