@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Verify key id match
+- Parse private key
+- Use ruby 2.7
+
 ## [0.0.5] - 2022-05-30
 
 ### Added
