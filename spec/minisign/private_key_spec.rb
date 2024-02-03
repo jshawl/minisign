@@ -2,9 +2,9 @@
 
 require 'rbnacl'
 describe Minisign::PrivateKey do
-  describe '.from_file' do
+  describe '.new' do
     before(:all) do
-      @private_key = Minisign::PrivateKey.new('test/minisign.key', 'password')
+      @private_key = Minisign::PrivateKey.new(File.read('test/minisign.key'), 'password')
     end
 
     it 'parses the signature_algorithm' do

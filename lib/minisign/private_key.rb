@@ -7,8 +7,8 @@ module Minisign
                 :key_id, :public_key, :secret_key, :checksum
 
     # rubocop:disable Metrics/AbcSize
-    def initialize(path, password = nil)
-      contents = File.read(path).split("\n")
+    def initialize(str, password = nil)
+      contents = str.split("\n")
       bytes = Base64.decode64(contents.last).bytes
       @signature_algorithm, @kdf_algorithm, @cksum_algorithm =
         [bytes[0..1], bytes[2..3], bytes[4..5]].map { |a| a.pack('U*') }
