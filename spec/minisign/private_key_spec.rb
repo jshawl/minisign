@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'rbnacl'
 describe Minisign::PrivateKey do
   describe '.new' do
     before(:all) do
