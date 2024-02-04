@@ -14,6 +14,12 @@ describe Minisign::PrivateKey do
       expect(@private_key.kdf_algorithm).to eq('Sc')
     end
 
+    it 'raises if the private key requires a password but is not supplied' do
+      expect do
+        Minisign::PrivateKey.new(File.read('test/minisign.key'))
+      end.to raise_error('Missing password for encrypted key')
+    end
+
     it 'parses the cksum_algorithm' do
       expect(@private_key.cksum_algorithm).to eq('B2')
     end
@@ -53,15 +59,25 @@ describe Minisign::PrivateKey do
 
   describe 'sign' do
     it 'signs a file' do
-      Dir.glob('test/generated/*').each { |file| File.delete(file) }
-      filename = "#{SecureRandom.uuid}.txt"
-      message = SecureRandom.uuid
-      File.write("test/generated/#{filename}", message)
-      signature = @private_key.sign(filename, message)
-      File.write("test/generated/#{filename}.minisig", signature)
+      @filename = "encrypted-key.txt"
+      @message = SecureRandom.uuid
+      File.write("test/generated/#{@filename}", @message)
+      signature = @private_key.sign(@filename, @message)
+      File.write("test/generated/#{@filename}.minisig", signature)
       @signature = Minisign::Signature.new(signature)
       @public_key = Minisign::PublicKey.new('RWSmKaOrT6m3TGwjwBovgOmlhSbyBUw3hyhnSOYruHXbJa36xHr8rq2M')
-      expect(@public_key.verify(@signature, message)).to match('Signature and comment signature verified')
+      expect(@public_key.verify(@signature, @message)).to match('Signature and comment signature verified')
+    end
+    it 'signs a file with an unencrypted key' do
+      @filename = "unencrypted-key.txt"
+      @message = SecureRandom.uuid
+      File.write("test/generated/#{@filename}", @message)
+      @unencrypted_private_key = Minisign::PrivateKey.new(File.read('test/unencrypted.key'))
+      signature = @unencrypted_private_key.sign(@filename, @message)
+      File.write("test/generated/#{@filename}.minisig", signature)
+      @signature = Minisign::Signature.new(signature)
+      @public_key = Minisign::PublicKey.new('RWT/N/MXaBIWRAPzfdEKqVRq9txskjf5qh7EbqMLVHjkNTGFazO3zMw2')
+      expect(@public_key.verify(@signature, @message)).to match('Signature and comment signature verified')
     end
   end
 end
