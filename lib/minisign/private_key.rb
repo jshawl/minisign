@@ -9,6 +9,7 @@ module Minisign
 
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Layout/LineLength
+    # rubocop:disable Metrics/MethodLength
 
     # Parse signing information from the minisign private key
     #
@@ -20,14 +21,31 @@ module Minisign
       bytes = Base64.decode64(contents.last).bytes
       @signature_algorithm, @kdf_algorithm, @cksum_algorithm =
         [bytes[0..1], bytes[2..3], bytes[4..5]].map { |a| a.pack('U*') }
+      raise 'Missing password for encrypted key' if @kdf_algorithm.bytes.sum != 0 && password.nil?
+
       @kdf_salt = bytes[6..37]
       @kdf_opslimit = bytes[38..45].pack('V*').unpack('N*').sum
       @kdf_memlimit = bytes[46..53].pack('V*').unpack('N*').sum
-      kdf_output = derive_key(password, @kdf_salt, @kdf_opslimit, @kdf_memlimit)
-      @key_id, @secret_key, @public_key, @checksum = xor(kdf_output, bytes[54..157])
+      key_data_bytes = if password
+                         kdf_output = derive_key(password, @kdf_salt, @kdf_opslimit, @kdf_memlimit)
+                         xor(kdf_output, bytes[54..157])
+                       else
+                         bytes[54..157]
+                       end
+      @key_id, @secret_key, @public_key, @checksum = key_data(key_data_bytes)
+      assert_keypair_match!
     end
     # rubocop:enable Layout/LineLength
     # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/MethodLength
+
+    def assert_keypair_match!
+      raise 'Wrong password for that key' if @public_key != ed25519_signing_key.verify_key.to_bytes.bytes
+    end
+
+    def key_data(bytes)
+      [bytes[0..7], bytes[8..39], bytes[40..71], bytes[72..103]]
+    end
 
     # @return [String] the <kdf_output> used to xor the ed25519 keys
     def derive_key(password, kdf_salt, kdf_opslimit, kdf_memlimit)
@@ -45,10 +63,9 @@ module Minisign
     # @return [Array<32 bit unsigned ints>] the byte array containing the key id, the secret and public ed25519 keys, and the checksum
     def xor(kdf_output, contents)
       # rubocop:enable Layout/LineLength
-      xored = kdf_output.each_with_index.map do |b, i|
+      kdf_output.each_with_index.map do |b, i|
         contents[i] ^ b
       end
-      [xored[0..7], xored[8..39], xored[40..71], xored[72..103]]
     end
 
     # @return [Ed25519::SigningKey] the ed25519 signing key
