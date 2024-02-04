@@ -20,6 +20,12 @@ describe Minisign::PrivateKey do
       end.to raise_error('Missing password for encrypted key')
     end
 
+    it 'raises if the password is incorrect for the private key' do
+      expect do
+        Minisign::PrivateKey.new(File.read('test/minisign.key'), 'not the right password')
+      end.to raise_error('Wrong password for that key')
+    end
+
     it 'parses the cksum_algorithm' do
       expect(@private_key.cksum_algorithm).to eq('B2')
     end

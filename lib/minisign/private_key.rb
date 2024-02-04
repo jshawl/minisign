@@ -33,10 +33,15 @@ module Minisign
                          bytes[54..157]
                        end
       @key_id, @secret_key, @public_key, @checksum = key_data(key_data_bytes)
+      assert_keypair_match!
     end
     # rubocop:enable Layout/LineLength
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/MethodLength
+
+    def assert_keypair_match!
+      raise 'Wrong password for that key' if @public_key != ed25519_signing_key.verify_key.to_bytes.bytes
+    end
 
     def key_data(bytes)
       [bytes[0..7], bytes[8..39], bytes[40..71], bytes[72..103]]
