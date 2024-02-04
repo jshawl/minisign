@@ -26,12 +26,13 @@ module Minisign
       @kdf_salt = bytes[6..37]
       @kdf_opslimit = bytes[38..45].pack('V*').unpack('N*').sum
       @kdf_memlimit = bytes[46..53].pack('V*').unpack('N*').sum
-      if password
-        kdf_output = derive_key(password, @kdf_salt, @kdf_opslimit, @kdf_memlimit)
-        @key_id, @secret_key, @public_key, @checksum = key_data(xor(kdf_output, bytes[54..157]))
-      else
-        @key_id, @secret_key, @public_key, @checksum = key_data(bytes[54..157])
-      end
+      key_data_bytes = if password
+                         kdf_output = derive_key(password, @kdf_salt, @kdf_opslimit, @kdf_memlimit)
+                         xor(kdf_output, bytes[54..157])
+                       else
+                         bytes[54..157]
+                       end
+      @key_id, @secret_key, @public_key, @checksum = key_data(key_data_bytes)
     end
     # rubocop:enable Layout/LineLength
     # rubocop:enable Metrics/AbcSize
