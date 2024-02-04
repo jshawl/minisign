@@ -59,7 +59,7 @@ describe Minisign::PrivateKey do
 
   describe 'sign' do
     it 'signs a file' do
-      @filename = "encrypted-key.txt"
+      @filename = 'encrypted-key.txt'
       @message = SecureRandom.uuid
       File.write("test/generated/#{@filename}", @message)
       signature = @private_key.sign(@filename, @message)
@@ -69,7 +69,7 @@ describe Minisign::PrivateKey do
       expect(@public_key.verify(@signature, @message)).to match('Signature and comment signature verified')
     end
     it 'signs a file with an unencrypted key' do
-      @filename = "unencrypted-key.txt"
+      @filename = 'unencrypted-key.txt'
       @message = SecureRandom.uuid
       File.write("test/generated/#{@filename}", @message)
       @unencrypted_private_key = Minisign::PrivateKey.new(File.read('test/unencrypted.key'))
