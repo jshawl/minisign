@@ -2,7 +2,6 @@
 
 require 'ed25519'
 require 'base64'
-require 'openssl'
 require 'rbnacl'
 
 require 'minisign/utils'
