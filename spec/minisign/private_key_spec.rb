@@ -65,10 +65,10 @@ describe Minisign::PrivateKey do
         [69, 100],
         @private_key.key_id,
         @private_key.secret_key,
-        @private_key.public_key,
-      ].inject(&:+).pack("C*")
+        @private_key.public_key
+      ].inject(&:+).pack('C*')
 
-      computed_checksum = RbNaCl::Hash::Blake2b.digest(key_data, {digest_size: 32}).bytes
+      computed_checksum = RbNaCl::Hash::Blake2b.digest(key_data, { digest_size: 32 }).bytes
 
       expect(@private_key.checksum).to eq(computed_checksum)
     end
