@@ -60,6 +60,17 @@ describe Minisign::PrivateKey do
     it 'parses the checksum' do
       expect(@private_key.checksum).to eq([19, 146, 239, 121, 33, 164, 216, 219, 8, 104, 111, 52, 198, 78, 21, 236,
                                            113, 255, 174, 47, 39, 216, 61, 198, 233, 161, 233, 143, 84, 246, 255, 150])
+
+      key_data = [
+        [69, 100],
+        @private_key.key_id,
+        @private_key.secret_key,
+        @private_key.public_key,
+      ].inject(&:+).pack("C*")
+
+      computed_checksum = RbNaCl::Hash::Blake2b.digest(key_data, {digest_size: 32}).bytes
+
+      expect(@private_key.checksum).to eq(computed_checksum)
     end
   end
 
