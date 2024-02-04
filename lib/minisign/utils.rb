@@ -3,8 +3,12 @@
 module Minisign
   # Helpers used in multiple classes
   module Utils
+    def blake2b256(message)
+      RbNaCl::Hash::Blake2b.digest(message, { digest_size: 32 })
+    end
+
     def blake2b512(message)
-      OpenSSL::Digest.new('BLAKE2b512').digest(message)
+      RbNaCl::Hash::Blake2b.digest(message, { digest_size: 64 })
     end
   end
 end
