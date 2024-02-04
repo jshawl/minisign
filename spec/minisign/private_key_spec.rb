@@ -68,7 +68,7 @@ describe Minisign::PrivateKey do
       @filename = 'encrypted-key.txt'
       @message = SecureRandom.uuid
       File.write("test/generated/#{@filename}", @message)
-      signature = @private_key.sign(@filename, @message)
+      signature = @private_key.sign(@filename, @message, 'this is a trusted comment')
       File.write("test/generated/#{@filename}.minisig", signature)
       @signature = Minisign::Signature.new(signature)
       @public_key = Minisign::PublicKey.new('RWSmKaOrT6m3TGwjwBovgOmlhSbyBUw3hyhnSOYruHXbJa36xHr8rq2M')
