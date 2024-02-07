@@ -14,6 +14,11 @@ describe Minisign::PrivateKey do
       expect(@private_key.kdf_algorithm).to eq('Sc')
     end
 
+    it 'parses the kdf_algorithm' do
+      @unencrypted_private_key = Minisign::PrivateKey.new(File.read('test/unencrypted.key'))
+      expect(@unencrypted_private_key.kdf_algorithm.unpack('C*')).to eq([0, 0])
+    end
+
     it 'raises if the private key requires a password but is not supplied' do
       expect do
         Minisign::PrivateKey.new(File.read('test/minisign.key'))

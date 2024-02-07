@@ -30,7 +30,7 @@ module Minisign
       @kdf_memlimit = bytes[46..53].pack('V*').unpack('N*').sum
       @keynum_sk = bytes[54..157].pack('C*')
       @key_data_bytes = if password
-                          kdf_output = derive_key(password, @kdf_salt, @kdf_opslimit, @kdf_memlimit)
+                          kdf_output = derive_key(password, @kdf_salt.pack('C*'), @kdf_opslimit, @kdf_memlimit)
                           xor(kdf_output, bytes[54..157])
                         else
                           bytes[54..157]
@@ -48,27 +48,6 @@ module Minisign
 
     def key_data(bytes)
       [bytes[0..7], bytes[8..39], bytes[40..71], bytes[72..103]]
-    end
-
-    # @return [String] the <kdf_output> used to xor the ed25519 keys
-    def derive_key(password, kdf_salt, kdf_opslimit, kdf_memlimit)
-      RbNaCl::PasswordHash.scrypt(
-        password,
-        kdf_salt.pack('C*'),
-        kdf_opslimit,
-        kdf_memlimit,
-        104
-      ).bytes
-    end
-
-    # rubocop:disable Layout/LineLength
-
-    # @return [Array<32 bit unsigned ints>] the byte array containing the key id, the secret and public ed25519 keys, and the checksum
-    def xor(kdf_output, contents)
-      # rubocop:enable Layout/LineLength
-      kdf_output.each_with_index.map do |b, i|
-        contents[i] ^ b
-      end
     end
 
     # @return [Ed25519::SigningKey] the ed25519 signing key
