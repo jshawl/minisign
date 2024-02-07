@@ -26,13 +26,13 @@ module Minisign
       @kdf_salt = bytes[6..37]
       @kdf_opslimit = bytes[38..45].pack('V*').unpack('N*').sum
       @kdf_memlimit = bytes[46..53].pack('V*').unpack('N*').sum
-      key_data_bytes = if password
-                         kdf_output = derive_key(password, @kdf_salt, @kdf_opslimit, @kdf_memlimit)
-                         xor(kdf_output, bytes[54..157])
-                       else
-                         bytes[54..157]
-                       end
-      @key_id, @secret_key, @public_key, @checksum = key_data(key_data_bytes)
+      @key_data_bytes = if password
+                          kdf_output = derive_key(password, @kdf_salt, @kdf_opslimit, @kdf_memlimit)
+                          xor(kdf_output, bytes[54..157])
+                        else
+                          bytes[54..157]
+                        end
+      @key_id, @secret_key, @public_key, @checksum = key_data(@key_data_bytes)
       assert_keypair_match!
     end
     # rubocop:enable Layout/LineLength
@@ -90,6 +90,15 @@ module Minisign
         Base64.strict_encode64(global_signature),
         ''
       ].join("\n")
+    end
+
+    def to_s
+      kdf_algorithm = @password.nil? ? [0, 0].pack('U*') : 'Sc'
+      kdf_salt = @kdf_salt.pack('C*')
+      kdf_opslimit = [@kdf_opslimit, 0].pack('L*')
+      kdf_memlimit = [@kdf_memlimit, 0].pack('L*')
+      data = "Ed#{kdf_algorithm}B2#{kdf_algorithm}#{kdf_salt}#{kdf_opslimit}#{kdf_memlimit}#{@key_data_bytes}"
+      "untrusted comment: <arbitrary text>\n#{Base64.strict_encode64(data)}\n"
     end
   end
 end

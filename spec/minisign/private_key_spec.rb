@@ -71,6 +71,12 @@ describe Minisign::PrivateKey do
       computed_checksum = blake2b256(key_data).bytes
       expect(@private_key.checksum).to eq(computed_checksum)
     end
+
+    it 'can be written to a file' do
+      expect do
+        Base64.strict_decode64(@private_key.to_s.split("\n").last)
+      end.not_to raise_error
+    end
   end
 
   describe 'sign' do
