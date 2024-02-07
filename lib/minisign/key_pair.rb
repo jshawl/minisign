@@ -21,9 +21,9 @@ module Minisign
     def private_key
       @kdf_opslimit = kdf_opslimit_bytes.pack('C*')
       @kdf_memlimit = kdf_memlimit_bytes.pack('C*')
+      data = "Ed#{@kdf_algorithm}B2#{@kdf_salt}#{@kdf_opslimit}#{@kdf_memlimit}#{@keynum_sk}"
       Minisign::PrivateKey.new(
-        "untrusted comment: minisign secret key\n" +
-        Base64.strict_encode64("Ed#{@kdf_algorithm}B2#{@kdf_salt}#{@kdf_opslimit}#{@kdf_memlimit}#{@keynum_sk}"),
+        "untrusted comment: minisign secret key\n#{Base64.strict_encode64(data)}",
         @password
       )
     end

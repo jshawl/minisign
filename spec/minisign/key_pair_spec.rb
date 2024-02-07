@@ -8,6 +8,6 @@ describe Minisign::KeyPair do
   it 'generates a keypair with a password' do
     keypair = Minisign::KeyPair.new('secret password')
     expect(keypair.private_key).to be_truthy
-    File.write("test/generated/new-keypair.key", keypair.private_key)
+    File.write('test/generated/new-keypair.key', keypair.private_key)
   end
 end
