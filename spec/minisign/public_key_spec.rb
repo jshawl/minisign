@@ -27,4 +27,7 @@ describe Minisign::PublicKey do
       @pk.verify(@signature, @message)
     end.to raise_error("Signature key id is 4CB7A94FABA329A6\nbut the key id in the public key is F15F69C58B18A08")
   end
+  it 'can be written to a file' do
+    expect(@pk.to_s).to eq(File.read('test/minisign.pub'))
+  end
 end
