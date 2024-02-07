@@ -5,7 +5,9 @@ A rubygem for creating and verifying [Minisign](http://jedisct1.github.io/minisi
 - [Installation \& Usage](#installation--usage)
   - [Read a public key](#read-a-public-key)
   - [Verify a signature](#verify-a-signature)
+  - [Read a private key](#read-a-private-key)
   - [Create a signature](#create-a-signature)
+  - [Generate a key pair](#generate-a-key-pair)
 - [Local Development](#local-development)
 - [Documentation](#documentation)
 
@@ -27,29 +29,34 @@ public_key = Minisign::PublicKey.new(File.read("test/minisign.pub"))
 ### Verify a signature
 
 ```rb
-require 'minisign'
-public_key = Minisign::PublicKey.new('RWSmKaOrT6m3TGwjwBovgOmlhSbyBUw3hyhnSOYruHXbJa36xHr8rq2M')
 message = File.read("test/example.txt")
 signature = Minisign::Signature.new(File.read("test/example.txt.minisig"))
 public_key.verify(signature, message)
 ```
 
-The above is equivalent to:
+### Read a private key
 
-```
-minisign -Vm test/example.txt -P RWSmKaOrT6m3TGwjwBovgOmlhSbyBUw3hyhnSOYruHXbJa36xHr8rq2M
+```rb
+password = "password" # optional, if the key is not encrypted
+private_key = Minisign::PrivateKey.new(File.read("minisign.key"), password)
 ```
 
 ### Create a signature
 
 ```rb
-require 'minisign'
 file_path = "example.txt"
 password = "password"
-private_key = Minisign::PrivateKey.new(File.read("minisign.key"), password)
 signature = private_key.sign(file_path, File.read(file_path))
-
 File.write("#{file_path}.minisig", signature.to_s)
+```
+
+### Generate a key pair
+
+```rb
+password = "password" # or nil, to generate a private key without encryption
+keypair = Minisign::KeyPair.new(password)
+keypair.private_key # Minisign::PrivateKey
+keypair.public_key # Minisign::PublicKey
 ```
 
 ## Local Development
