@@ -42,6 +42,7 @@ module Minisign
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/MethodLength
 
+    # @raise [RuntimeError] if the extracted public key does not match the derived public key
     def assert_keypair_match!
       raise 'Wrong password for that key' if @public_key != ed25519_signing_key.verify_key.to_bytes.bytes
     end
@@ -74,6 +75,7 @@ module Minisign
       ].join("\n"))
     end
 
+    # @return [String] A string in the minisign.pub format
     def to_s
       kdf_salt = @kdf_salt.pack('C*')
       kdf_opslimit = [@kdf_opslimit, 0].pack('L*')

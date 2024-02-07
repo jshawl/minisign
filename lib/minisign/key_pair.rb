@@ -7,7 +7,8 @@ module Minisign
 
     def initialize(password = nil)
       @password = password
-
+      @key_id = SecureRandom.bytes(8)
+      @signing_key = Ed25519::SigningKey.generate
       kd = key_data
 
       @checksum = blake2b256("Ed#{kd}")
@@ -18,6 +19,7 @@ module Minisign
       @kdf_algorithm = password.nil? ? [0, 0].pack('U*') : 'Sc'
     end
 
+    # @return [Minisign::PrivateKey]
     def private_key
       @kdf_opslimit = kdf_opslimit_bytes.pack('C*')
       @kdf_memlimit = kdf_memlimit_bytes.pack('C*')
@@ -26,6 +28,12 @@ module Minisign
         "untrusted comment: minisign secret key\n#{Base64.strict_encode64(data)}",
         @password
       )
+    end
+
+    # @return [Minisign::PublicKey]
+    def public_key
+      data = Base64.strict_encode64("Ed#{@key_id}#{@signing_key.verify_key.to_bytes}")
+      Minisign::PublicKey.new(data)
     end
 
     private
@@ -40,9 +48,7 @@ module Minisign
     end
 
     def key_data
-      key_id = SecureRandom.bytes(8)
-      signing_key = Ed25519::SigningKey.generate
-      "#{key_id}#{signing_key.to_bytes}#{signing_key.verify_key.to_bytes}"
+      "#{@key_id}#{@signing_key.to_bytes}#{@signing_key.verify_key.to_bytes}"
     end
 
     # 🤷
