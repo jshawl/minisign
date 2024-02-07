@@ -33,7 +33,7 @@ jobs:
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - name: Lint code
       run: bundle exec rubocop
+    - name: Install jedisct1/minisign
+      run: ./spec/install-minisign.sh
     - name: Run tests
       run: bundle exec rspec
-    - name: Test against jedisct1/minisign
-      run: ./spec/verify.sh
