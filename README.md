@@ -20,7 +20,7 @@ gem install minisign
 ```rb
 require 'minisign'
 public_key = Minisign::PublicKey.new('RWSmKaOrT6m3TGwjwBovgOmlhSbyBUw3hyhnSOYruHXbJa36xHr8rq2M')
-# or from disk
+# or from a file
 public_key = Minisign::PublicKey.new(File.read("test/minisign.pub"))
 ```
 
