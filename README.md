@@ -7,7 +7,7 @@ A rubygem for creating and verifying [Minisign](http://jedisct1.github.io/minisi
   - [Verify a signature](#verify-a-signature)
   - [Create a signature](#create-a-signature)
 - [Local Development](#local-development)
-- [Local Documentation](#local-documentation)
+- [Documentation](#documentation)
 
 ## Installation & Usage
 
@@ -58,7 +58,12 @@ File.write("#{file_path}.minisig", signature.to_s)
 irb -Ilib -rminisign
 ```
 
-## Local Documentation
+## Documentation
+
+The documentation for this gem is published here: 
+https://www.rubydoc.info/gems/minisign/
+
+or if working locally:
 
 ```
 yard server --reload
