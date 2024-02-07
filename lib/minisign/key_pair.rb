@@ -45,6 +45,8 @@ module Minisign
       "#{key_id}#{signing_key.to_bytes}#{signing_key.verify_key.to_bytes}"
     end
 
+    # 🤷
+    # https://github.com/RubyCrypto/rbnacl/blob/3e8d8f8822e2b8eeba215e6be027e8ee210edfb9/lib/rbnacl/password_hash/scrypt.rb#L33-L34
     def kdf_opslimit_bytes
       [0, 0, 0, 2, 0, 0, 0, 0]
     end
