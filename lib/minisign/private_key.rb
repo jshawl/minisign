@@ -19,7 +19,7 @@ module Minisign
     def initialize(str, password = nil)
       contents = str.split("\n")
       decoded = Base64.decode64(contents.last)
-      @untrusted_comment = contents.first.split("untrusted comment: ").last
+      @untrusted_comment = contents.first.split('untrusted comment: ').last
       bytes = decoded.bytes
       @signature_algorithm, @kdf_algorithm, @cksum_algorithm =
         [bytes[0..1], bytes[2..3], bytes[4..5]].map { |a| a.pack('U*') }
@@ -28,7 +28,7 @@ module Minisign
       @kdf_salt = bytes[6..37]
       @kdf_opslimit = bytes[38..45].pack('V*').unpack('N*').sum
       @kdf_memlimit = bytes[46..53].pack('V*').unpack('N*').sum
-      @keynum_sk = bytes[54..157].pack("C*")
+      @keynum_sk = bytes[54..157].pack('C*')
       @key_data_bytes = if password
                           kdf_output = derive_key(password, @kdf_salt, @kdf_opslimit, @kdf_memlimit)
                           xor(kdf_output, bytes[54..157])

@@ -73,7 +73,7 @@ describe Minisign::PrivateKey do
     end
 
     it 'can be written to a file' do
-      expect(@private_key.to_s).to eq(File.read("test/minisign.key"))
+      expect(@private_key.to_s).to eq(File.read('test/minisign.key'))
     end
   end
 
