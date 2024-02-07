@@ -2,7 +2,7 @@
 
 describe Minisign::PublicKey do
   before do
-    @pk = Minisign::PublicKey.new(File.read('test/minisign.pub').split("\n").pop)
+    @pk = Minisign::PublicKey.new(File.read('test/minisign.pub'))
     @message = File.read('test/example.txt')
   end
   it 'verifies signatures' do
@@ -29,5 +29,9 @@ describe Minisign::PublicKey do
   end
   it 'can be written to a file' do
     expect(@pk.to_s).to eq(File.read('test/minisign.pub'))
+  end
+  it 'regenerates an untrusted comment if not provided' do
+    @pk = Minisign::PublicKey.new('RWSmKaOrT6m3TGwjwBovgOmlhSbyBUw3hyhnSOYruHXbJa36xHr8rq2M')
+    expect(@pk.to_s).to match('minisign public key 4CB7A94FABA329A6')
   end
 end

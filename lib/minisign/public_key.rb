@@ -10,9 +10,15 @@ module Minisign
     # @example
     #   Minisign::PublicKey.new('RWTg6JXWzv6GDtDphRQ/x7eg0LaWBcTxPZ7i49xEeiqXVcR+r79OZRWM')
     def initialize(str)
-      @decoded = Base64.strict_decode64(str)
+      parts = str.split("\n")
+      @decoded = Base64.strict_decode64(parts.last)
       @public_key = @decoded[10..]
       @verify_key = Ed25519::VerifyKey.new(@public_key)
+      @untrusted_comment = if parts.length == 1
+                             "minisign public key #{key_id}\n#{key_data}\n"
+                           else
+                             parts.first.split('untrusted comment: ').last
+                           end
     end
 
     # @return [String] the key id
@@ -41,9 +47,12 @@ module Minisign
       "Signature and comment signature verified\nTrusted comment: #{sig.trusted_comment}"
     end
 
+    def key_data
+      Base64.strict_encode64("Ed#{@decoded[2..9]}#{@public_key}")
+    end
+
     def to_s
-      data = Base64.strict_encode64("Ed#{@decoded[2..9]}#{@public_key}")
-      "untrusted comment: minisign public key #{key_id}\n#{data}\n"
+      "untrusted comment: #{@untrusted_comment}\n#{key_data}\n"
     end
 
     private
