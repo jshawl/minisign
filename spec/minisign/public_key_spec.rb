@@ -32,6 +32,6 @@ describe Minisign::PublicKey do
   end
   it 'regenerates an untrusted comment if not provided' do
     @pk = Minisign::PublicKey.new('RWSmKaOrT6m3TGwjwBovgOmlhSbyBUw3hyhnSOYruHXbJa36xHr8rq2M')
-    expect(@pk.to_s).to match("minisign public key 4CB7A94FABA329A6")
+    expect(@pk.to_s).to match('minisign public key 4CB7A94FABA329A6')
   end
 end

@@ -15,10 +15,10 @@ module Minisign
       @public_key = @decoded[10..]
       @verify_key = Ed25519::VerifyKey.new(@public_key)
       @untrusted_comment = if parts.length == 1
-        "minisign public key #{key_id}\n#{key_data}\n"
-      else
-        parts.first.split("untrusted comment: ").last
-      end
+                             "minisign public key #{key_id}\n#{key_data}\n"
+                           else
+                             parts.first.split('untrusted comment: ').last
+                           end
     end
 
     # @return [String] the key id
