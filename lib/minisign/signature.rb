@@ -36,7 +36,7 @@ module Minisign
     end
 
     def to_s
-      @lines.join("\n") + "\n"
+      "#{@lines.join("\n")}\n"
     end
 
     private

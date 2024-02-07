@@ -65,13 +65,13 @@ module Minisign
       signature = ed25519_signing_key.sign(blake2b512(message))
       trusted_comment = comment || "timestamp:#{Time.now.to_i}\tfile:#{filename}\thashed"
       global_signature = ed25519_signing_key.sign("#{signature}#{trusted_comment}")
-      [
+      Minisign::Signature.new([
         'untrusted comment: <arbitrary text>',
         Base64.strict_encode64("ED#{@key_id.pack('C*')}#{signature}"),
         "trusted comment: #{trusted_comment}",
         Base64.strict_encode64(global_signature),
         ''
-      ].join("\n")
+      ].join("\n"))
     end
 
     def to_s
