@@ -60,7 +60,7 @@ module Minisign
     # @param filename [String] The filename to be used in the trusted comment section
     # @param message [String] The file's contents
     # @param comment [String] An optional trusted comment to be included in the signature
-    # @return [String] the signature in the .minisig format that can be written to a file.
+    # @return [Minisign::Signature]
     def sign(filename, message, comment = nil)
       signature = ed25519_signing_key.sign(blake2b512(message))
       trusted_comment = comment || "timestamp:#{Time.now.to_i}\tfile:#{filename}\thashed"
