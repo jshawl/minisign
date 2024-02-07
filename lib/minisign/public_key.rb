@@ -41,6 +41,11 @@ module Minisign
       "Signature and comment signature verified\nTrusted comment: #{sig.trusted_comment}"
     end
 
+    def to_s
+      data = Base64.strict_encode64("Ed#{@decoded[2..9]}#{@public_key}")
+      "untrusted comment: minisign public key #{key_id}\n#{data}\n"
+    end
+
     private
 
     def ensure_matching_key_ids(key_id1, key_id2)
