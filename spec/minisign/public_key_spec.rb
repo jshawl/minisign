@@ -2,7 +2,7 @@
 
 describe Minisign::PublicKey do
   before do
-    @pk = Minisign::PublicKey.new(File.read('test/minisign.pub').split("\n").pop)
+    @pk = Minisign::PublicKey.new(File.read('test/minisign.pub'))
     @message = File.read('test/example.txt')
   end
   it 'verifies signatures' do

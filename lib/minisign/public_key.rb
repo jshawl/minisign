@@ -10,7 +10,8 @@ module Minisign
     # @example
     #   Minisign::PublicKey.new('RWTg6JXWzv6GDtDphRQ/x7eg0LaWBcTxPZ7i49xEeiqXVcR+r79OZRWM')
     def initialize(str)
-      @decoded = Base64.strict_decode64(str)
+      parts = str.split("\n")
+      @decoded = Base64.strict_decode64(parts.last)
       @public_key = @decoded[10..]
       @verify_key = Ed25519::VerifyKey.new(@public_key)
     end
