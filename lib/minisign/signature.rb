@@ -35,6 +35,10 @@ module Minisign
       encoded_signature[10..]
     end
 
+    def to_s
+      "#{@lines.join("\n")}\n"
+    end
+
     private
 
     def encoded_signature

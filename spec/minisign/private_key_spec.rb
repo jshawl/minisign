@@ -89,9 +89,8 @@ describe Minisign::PrivateKey do
       File.write("test/generated/#{@filename}", @message)
       signature = @private_key.sign(@filename, @message, 'this is a trusted comment')
       File.write("test/generated/#{@filename}.minisig", signature)
-      @signature = Minisign::Signature.new(signature)
       @public_key = Minisign::PublicKey.new('RWSmKaOrT6m3TGwjwBovgOmlhSbyBUw3hyhnSOYruHXbJa36xHr8rq2M')
-      expect(@public_key.verify(@signature, @message)).to match('Signature and comment signature verified')
+      expect(@public_key.verify(signature, @message)).to match('Signature and comment signature verified')
     end
     it 'signs a file with an unencrypted key' do
       @filename = 'unencrypted-key.txt'
@@ -100,9 +99,8 @@ describe Minisign::PrivateKey do
       @unencrypted_private_key = Minisign::PrivateKey.new(File.read('test/unencrypted.key'))
       signature = @unencrypted_private_key.sign(@filename, @message)
       File.write("test/generated/#{@filename}.minisig", signature)
-      @signature = Minisign::Signature.new(signature)
       @public_key = Minisign::PublicKey.new('RWT/N/MXaBIWRAPzfdEKqVRq9txskjf5qh7EbqMLVHjkNTGFazO3zMw2')
-      expect(@public_key.verify(@signature, @message)).to match('Signature and comment signature verified')
+      expect(@public_key.verify(signature, @message)).to match('Signature and comment signature verified')
     end
   end
 end
