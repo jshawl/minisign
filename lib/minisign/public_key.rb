@@ -14,6 +14,12 @@ module Minisign
       @decoded = Base64.strict_decode64(parts.last)
       @public_key = @decoded[10..]
       @verify_key = Ed25519::VerifyKey.new(@public_key)
+      if parts.length == 1
+        data = Base64.strict_encode64("Ed#{@decoded[2..9]}#{@public_key}")
+        @untrusted_comment = "minisign public key #{key_id}\n#{data}\n"
+      else
+        @untrusted_comment = parts.first.split("untrusted comment: ").last
+      end
     end
 
     # @return [String] the key id
@@ -44,7 +50,7 @@ module Minisign
 
     def to_s
       data = Base64.strict_encode64("Ed#{@decoded[2..9]}#{@public_key}")
-      "untrusted comment: minisign public key #{key_id}\n#{data}\n"
+      "untrusted comment: #{@untrusted_comment}\n#{data}\n"
     end
 
     private
