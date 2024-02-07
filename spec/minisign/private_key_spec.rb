@@ -73,9 +73,7 @@ describe Minisign::PrivateKey do
     end
 
     it 'can be written to a file' do
-      expect do
-        Base64.strict_decode64(@private_key.to_s.split("\n").last)
-      end.not_to raise_error
+      expect(@private_key.to_s).to eq(File.read("test/minisign.key"))
     end
   end
 
