@@ -86,21 +86,25 @@ describe Minisign::PrivateKey do
     it 'signs a file' do
       @filename = 'encrypted-key.txt'
       @message = SecureRandom.uuid
-      File.write("test/generated/#{@filename}", @message)
       signature = @private_key.sign(@filename, @message, 'this is a trusted comment')
-      File.write("test/generated/#{@filename}.minisig", signature)
       @public_key = Minisign::PublicKey.new('RWSmKaOrT6m3TGwjwBovgOmlhSbyBUw3hyhnSOYruHXbJa36xHr8rq2M')
       expect(@public_key.verify(signature, @message)).to match('Signature and comment signature verified')
+      File.write("test/generated/#{@filename}", @message)
+      File.write("test/generated/#{@filename}.minisig", signature)
+      expect(system('test/generated/minisign -Vm test/generated/encrypted-key.txt -p test/minisign.pub')).to be(true)
     end
     it 'signs a file with an unencrypted key' do
       @filename = 'unencrypted-key.txt'
       @message = SecureRandom.uuid
-      File.write("test/generated/#{@filename}", @message)
       @unencrypted_private_key = Minisign::PrivateKey.new(File.read('test/unencrypted.key'))
       signature = @unencrypted_private_key.sign(@filename, @message)
-      File.write("test/generated/#{@filename}.minisig", signature)
       @public_key = Minisign::PublicKey.new('RWT/N/MXaBIWRAPzfdEKqVRq9txskjf5qh7EbqMLVHjkNTGFazO3zMw2')
       expect(@public_key.verify(signature, @message)).to match('Signature and comment signature verified')
+      File.write("test/generated/#{@filename}", @message)
+      File.write("test/generated/#{@filename}.minisig", signature)
+      expect(system(
+               'test/generated/minisign -Vm test/generated/unencrypted-key.txt -p test/unencrypted.pub'
+             )).to be(true)
     end
   end
 end
