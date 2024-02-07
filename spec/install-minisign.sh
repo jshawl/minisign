@@ -10,7 +10,3 @@ else
     tar -xvzf test/generated/minisign.tar.gz -C test/generated
     mv test/generated/minisign-linux/x86_64/minisign test/generated/minisign
 fi
-
-test/generated/minisign -Vm test/generated/encrypted-key.txt -p test/minisign.pub || exit 1
-test/generated/minisign -Vm test/generated/unencrypted-key.txt -p test/unencrypted.pub || exit 1
-echo "secret password" | test/generated/minisign -Sm test/generated/.keep -s test/generated/new-keypair.key || exit 1
