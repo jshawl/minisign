@@ -5,7 +5,7 @@ module Minisign
   class PrivateKey
     include Utils
     attr_reader :signature_algorithm, :kdf_algorithm, :cksum_algorithm, :kdf_salt, :kdf_opslimit, :kdf_memlimit,
-                :key_id, :public_key, :secret_key, :checksum
+                :key_id, :ed25519_public_key, :secret_key, :checksum
 
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Layout/LineLength
@@ -35,7 +35,7 @@ module Minisign
                         else
                           bytes[54..157]
                         end
-      @key_id, @secret_key, @public_key, @checksum = key_data(@key_data_bytes)
+      @key_id, @secret_key, @ed25519_public_key, @checksum = key_data(@key_data_bytes)
       assert_keypair_match!
     end
     # rubocop:enable Layout/LineLength
@@ -44,7 +44,7 @@ module Minisign
 
     # @raise [RuntimeError] if the extracted public key does not match the derived public key
     def assert_keypair_match!
-      raise 'Wrong password for that key' if @public_key != ed25519_signing_key.verify_key.to_bytes.bytes
+      raise 'Wrong password for that key' if @ed25519_public_key != ed25519_signing_key.verify_key.to_bytes.bytes
     end
 
     def key_data(bytes)
@@ -54,6 +54,11 @@ module Minisign
     # @return [Ed25519::SigningKey] the ed25519 signing key
     def ed25519_signing_key
       Ed25519::SigningKey.new(@secret_key.pack('C*'))
+    end
+
+    def public_key
+      data = Base64.strict_encode64("Ed#{@key_id.pack('C*')}#{ed25519_signing_key.verify_key.to_bytes}")
+      Minisign::PublicKey.new(data)
     end
 
     # Sign a file/message
