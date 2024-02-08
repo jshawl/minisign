@@ -53,8 +53,9 @@ describe Minisign::PrivateKey do
     end
 
     it 'parses the public key' do
-      expect(@private_key.public_key).to eq([108, 35, 192, 26, 47, 128, 233, 165, 133, 38, 242, 5, 76, 55, 135, 40,
-                                             103, 72, 230, 43, 184, 117, 219, 37, 173, 250, 196, 122, 252, 174, 173, 140]) # rubocop:disable Layout/LineLength
+      key = @private_key.ed25519_public_key
+      expect(key).to eq([108, 35, 192, 26, 47, 128, 233, 165, 133, 38, 242, 5, 76, 55, 135, 40,
+                         103, 72, 230, 43, 184, 117, 219, 37, 173, 250, 196, 122, 252, 174, 173, 140])
     end
 
     it 'parses the secret key' do
@@ -70,7 +71,7 @@ describe Minisign::PrivateKey do
         [69, 100],
         @private_key.key_id,
         @private_key.secret_key,
-        @private_key.public_key
+        @private_key.ed25519_public_key
       ].inject(&:+).pack('C*')
 
       computed_checksum = blake2b256(key_data).bytes
@@ -79,6 +80,12 @@ describe Minisign::PrivateKey do
 
     it 'can be written to a file' do
       expect(@private_key.to_s).to eq(File.read('test/minisign.key'))
+    end
+
+    it 'can recreate the public key from the private key' do
+      # remove the custom untrusted comment
+      original = File.read('test/minisign.pub').gsub(' yay', '')
+      expect(@private_key.public_key.to_s).to eq(original)
     end
   end
 
