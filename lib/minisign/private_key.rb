@@ -65,7 +65,7 @@ module Minisign
     end
 
     def public_key
-      data = Base64.strict_encode64("Ed#{@key_id.pack('C*')}#{ed25519_signing_key.verify_key.to_bytes}")
+      data = Base64.strict_encode64("Ed#{@key_id.pack('C*')}#{@ed25519_public_key.pack('C*')}")
       Minisign::PublicKey.new(data)
     end
 
