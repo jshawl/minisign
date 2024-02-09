@@ -4,7 +4,7 @@ module Minisign
   # Parse ed25519 signing key from minisign private key
   class PrivateKey
     include Utils
-    attr_reader :signature_algorithm, :kdf_algorithm, :cksum_algorithm, :kdf_salt, :kdf_opslimit, :kdf_memlimit,
+    attr_reader :kdf_salt, :kdf_opslimit, :kdf_memlimit,
                 :key_id, :ed25519_public_key, :secret_key, :checksum
 
     # rubocop:disable Layout/LineLength
@@ -13,20 +13,33 @@ module Minisign
     #
     # @param str [String] The minisign private key
     # @example
-    #   Minisign::PrivateKey.new('RWRTY0IyEf+yYa5eAX38PgdrI3TMxwy+3sgzpgcZWQXhOKqdf9sAAAACAAAAAAAAAEAAAAAAHe8Olzttgk6k5pZyT3CyCTcTAV0bLN3kq5CUqhLjqSdYZ6oEWs/S7ztaephS+/jwnuOElLBKkg3Sd56jzyvMwL4qStNUTyPDqckNjniw2SlowmHN8n5NnR47gvqjo96E+vakpw8v5PE=', 'password')
+    #   Minisign::PrivateKey.new(
+    #     'RWRTY0IyEf+yYa5eAX38PgdrI3TMxwy+3sgzpgcZWQXhOKqdf9sAAAACAAAAAAAAAEAAAAAAHe8Olzttgk6k5pZyT3CyCTcTAV0bLN3kq5CUqhLjqSdYZ6oEWs/S7ztaephS+/jwnuOElLBKkg3Sd56jzyvMwL4qStNUTyPDqckNjniw2SlowmHN8n5NnR47gvqjo96E+vakpw8v5PE=',
+    #     'password'
+    #   )
     def initialize(str, password = nil)
       comment, data = str.split("\n")
       @password = password
       decoded = Base64.decode64(data)
       @untrusted_comment = comment.split('untrusted comment: ').last
-      bytes = decoded.bytes
-      @signature_algorithm, @kdf_algorithm, @cksum_algorithm =
-        [bytes[0..1], bytes[2..3], bytes[4..5]].map { |a| a.pack('U*') }
-      @kdf_salt, @kdf_opslimit, @kdf_memlimit = scrypt_params(bytes)
-      @key_id, @secret_key, @ed25519_public_key, @checksum = key_data(password, bytes[54..157])
+      @bytes = decoded.bytes
+      @kdf_salt, @kdf_opslimit, @kdf_memlimit = scrypt_params(@bytes)
+      @key_id, @secret_key, @ed25519_public_key, @checksum = key_data(password, @bytes[54..157])
       validate_key!
     end
     # rubocop:enable Layout/LineLength
+
+    def signature_algorithm
+      @bytes[0..1].pack('U*')
+    end
+
+    def kdf_algorithm
+      @bytes[2..3].pack('U*')
+    end
+
+    def cksum_algorithm
+      @bytes[4..5].pack('U*')
+    end
 
     def scrypt_params(bytes)
       [bytes[6..37], bytes[38..45].pack('V*').unpack('N*').sum, bytes[46..53].pack('V*').unpack('N*').sum]
@@ -34,7 +47,7 @@ module Minisign
 
     # @raise [RuntimeError] if the extracted public key does not match the derived public key
     def validate_key!
-      raise 'Missing password for encrypted key' if @kdf_algorithm.bytes.sum != 0 && @password.nil?
+      raise 'Missing password for encrypted key' if kdf_algorithm.bytes.sum != 0 && @password.nil?
       raise 'Wrong password for that key' if @ed25519_public_key != ed25519_signing_key.verify_key.to_bytes.bytes
     end
 
