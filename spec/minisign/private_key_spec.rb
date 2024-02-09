@@ -53,14 +53,15 @@ describe Minisign::PrivateKey do
     end
 
     it 'parses the public key' do
-      key = @private_key.ed25519_public_key
+      key = @private_key.ed25519_public_key_bytes
       expect(key).to eq([108, 35, 192, 26, 47, 128, 233, 165, 133, 38, 242, 5, 76, 55, 135, 40,
                          103, 72, 230, 43, 184, 117, 219, 37, 173, 250, 196, 122, 252, 174, 173, 140])
     end
 
     it 'parses the secret key' do
-      expect(@private_key.secret_key).to eq([65, 87, 110, 33, 168, 130, 118, 100, 249, 200, 160, 167, 47, 59, 141,
-                                             122, 156, 38, 80, 199, 139, 1, 21, 18, 116, 110, 204, 131, 199, 202, 181, 87]) # rubocop:disable Layout/LineLength
+      key = @private_key.ed25519_private_key_bytes
+      expect(key).to eq([65, 87, 110, 33, 168, 130, 118, 100, 249, 200, 160, 167, 47, 59, 141,
+                         122, 156, 38, 80, 199, 139, 1, 21, 18, 116, 110, 204, 131, 199, 202, 181, 87])
     end
 
     it 'parses the checksum' do
@@ -70,8 +71,8 @@ describe Minisign::PrivateKey do
       key_data = [
         [69, 100],
         @private_key.key_id,
-        @private_key.secret_key,
-        @private_key.ed25519_public_key
+        @private_key.ed25519_private_key_bytes,
+        @private_key.ed25519_public_key_bytes
       ].inject(&:+).pack('C*')
 
       computed_checksum = blake2b256(key_data).bytes
