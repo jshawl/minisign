@@ -53,7 +53,7 @@ describe Minisign::PrivateKey do
     end
 
     it 'parses the public key' do
-      key = @private_key.ed25519_public_key
+      key = @private_key.ed25519_public_key_bytes
       expect(key).to eq([108, 35, 192, 26, 47, 128, 233, 165, 133, 38, 242, 5, 76, 55, 135, 40,
                          103, 72, 230, 43, 184, 117, 219, 37, 173, 250, 196, 122, 252, 174, 173, 140])
     end
@@ -71,7 +71,7 @@ describe Minisign::PrivateKey do
         [69, 100],
         @private_key.key_id,
         @private_key.secret_key,
-        @private_key.ed25519_public_key
+        @private_key.ed25519_public_key_bytes
       ].inject(&:+).pack('C*')
 
       computed_checksum = blake2b256(key_data).bytes

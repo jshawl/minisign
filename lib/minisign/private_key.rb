@@ -5,7 +5,7 @@ module Minisign
   class PrivateKey
     include Utils
     attr_reader :kdf_salt, :kdf_opslimit, :kdf_memlimit,
-                :key_id, :ed25519_public_key, :secret_key, :checksum
+                :key_id, :ed25519_public_key_bytes, :secret_key, :checksum
 
     # rubocop:disable Layout/LineLength
 
@@ -24,7 +24,7 @@ module Minisign
       @untrusted_comment = comment.split('untrusted comment: ').last
       @bytes = decoded.bytes
       @kdf_salt, @kdf_opslimit, @kdf_memlimit = scrypt_params(@bytes)
-      @key_id, @secret_key, @ed25519_public_key, @checksum = key_data(password, @bytes[54..157])
+      @key_id, @secret_key, @ed25519_public_key_bytes, @checksum = key_data(password, @bytes[54..157])
       validate_key!
     end
     # rubocop:enable Layout/LineLength
@@ -48,7 +48,7 @@ module Minisign
     # @raise [RuntimeError] if the extracted public key does not match the derived public key
     def validate_key!
       raise 'Missing password for encrypted key' if kdf_algorithm.bytes.sum != 0 && @password.nil?
-      raise 'Wrong password for that key' if @ed25519_public_key != ed25519_signing_key.verify_key.to_bytes.bytes
+      raise 'Wrong password for that key' if @ed25519_public_key_bytes != ed25519_signing_key.verify_key.to_bytes.bytes
     end
 
     def key_data(password, bytes)
@@ -65,7 +65,7 @@ module Minisign
     end
 
     def public_key
-      data = Base64.strict_encode64("Ed#{@key_id.pack('C*')}#{@ed25519_public_key.pack('C*')}")
+      data = Base64.strict_encode64("Ed#{@key_id.pack('C*')}#{@ed25519_public_key_bytes.pack('C*')}")
       Minisign::PublicKey.new(data)
     end
 
@@ -93,7 +93,7 @@ module Minisign
       kdf_salt = @kdf_salt.pack('C*')
       kdf_opslimit = [@kdf_opslimit, 0].pack('L*')
       kdf_memlimit = [@kdf_memlimit, 0].pack('L*')
-      keynum_sk = key_data(@password, @key_id + @secret_key + @ed25519_public_key + @checksum)
+      keynum_sk = key_data(@password, @key_id + @secret_key + @ed25519_public_key_bytes + @checksum)
       data = "Ed#{kdf_algorithm}B2#{kdf_salt}#{kdf_opslimit}#{kdf_memlimit}#{keynum_sk.flatten.pack('C*')}"
       "untrusted comment: #{@untrusted_comment}\n#{Base64.strict_encode64(data)}\n"
     end
