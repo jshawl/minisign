@@ -41,29 +41,6 @@ module Minisign
       @bytes[4..5].pack('U*')
     end
 
-    def scrypt_params(bytes)
-      [bytes[6..37], bytes[38..45].pack('V*').unpack('N*').sum, bytes[46..53].pack('V*').unpack('N*').sum]
-    end
-
-    # @raise [RuntimeError] if the extracted public key does not match the derived public key
-    def validate_key!
-      raise 'Missing password for encrypted key' if kdf_algorithm.bytes.sum != 0 && @password.nil?
-      raise 'Wrong password for that key' if @ed25519_public_key_bytes != ed25519_signing_key.verify_key.to_bytes.bytes
-    end
-
-    def key_data(password, bytes)
-      if password
-        kdf_output = derive_key(password, @kdf_salt.pack('C*'), @kdf_opslimit, @kdf_memlimit)
-        bytes = xor(kdf_output, bytes)
-      end
-      [bytes[0..7], bytes[8..39], bytes[40..71], bytes[72..103]]
-    end
-
-    # @return [Ed25519::SigningKey] the ed25519 signing key
-    def ed25519_signing_key
-      Ed25519::SigningKey.new(@ed25519_private_key_bytes.pack('C*'))
-    end
-
     def public_key
       data = Base64.strict_encode64("Ed#{@key_id.pack('C*')}#{@ed25519_public_key_bytes.pack('C*')}")
       Minisign::PublicKey.new(data)
@@ -97,6 +74,31 @@ module Minisign
                            @key_id + @ed25519_private_key_bytes + @ed25519_public_key_bytes + @checksum).flatten
       data = "Ed#{kdf_algorithm}B2#{kdf_salt}#{kdf_opslimit}#{kdf_memlimit}#{keynum_sk.pack('C*')}"
       "untrusted comment: #{@untrusted_comment}\n#{Base64.strict_encode64(data)}\n"
+    end
+
+    private
+
+    def scrypt_params(bytes)
+      [bytes[6..37], bytes[38..45].pack('V*').unpack('N*').sum, bytes[46..53].pack('V*').unpack('N*').sum]
+    end
+
+    # @raise [RuntimeError] if the extracted public key does not match the derived public key
+    def validate_key!
+      raise 'Missing password for encrypted key' if kdf_algorithm.bytes.sum != 0 && @password.nil?
+      raise 'Wrong password for that key' if @ed25519_public_key_bytes != ed25519_signing_key.verify_key.to_bytes.bytes
+    end
+
+    def key_data(password, bytes)
+      if password
+        kdf_output = derive_key(password, @kdf_salt.pack('C*'), @kdf_opslimit, @kdf_memlimit)
+        bytes = xor(kdf_output, bytes)
+      end
+      [bytes[0..7], bytes[8..39], bytes[40..71], bytes[72..103]]
+    end
+
+    # @return [Ed25519::SigningKey] the ed25519 signing key
+    def ed25519_signing_key
+      Ed25519::SigningKey.new(@ed25519_private_key_bytes.pack('C*'))
     end
   end
 end
