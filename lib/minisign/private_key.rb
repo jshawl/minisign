@@ -93,8 +93,9 @@ module Minisign
       kdf_salt = @kdf_salt.pack('C*')
       kdf_opslimit = [@kdf_opslimit, 0].pack('L*')
       kdf_memlimit = [@kdf_memlimit, 0].pack('L*')
-      keynum_sk = key_data(@password, @key_id + @ed25519_private_key_bytes + @ed25519_public_key_bytes + @checksum)
-      data = "Ed#{kdf_algorithm}B2#{kdf_salt}#{kdf_opslimit}#{kdf_memlimit}#{keynum_sk.flatten.pack('C*')}"
+      keynum_sk = key_data(@password,
+                           @key_id + @ed25519_private_key_bytes + @ed25519_public_key_bytes + @checksum).flatten
+      data = "Ed#{kdf_algorithm}B2#{kdf_salt}#{kdf_opslimit}#{kdf_memlimit}#{keynum_sk.pack('C*')}"
       "untrusted comment: #{@untrusted_comment}\n#{Base64.strict_encode64(data)}\n"
     end
   end
