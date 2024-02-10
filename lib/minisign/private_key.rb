@@ -61,6 +61,10 @@ module Minisign
       "untrusted comment: #{@untrusted_comment}\n#{Base64.strict_encode64(data)}\n"
     end
 
+    def change_password!(new_password)
+      @password = new_password
+    end
+
     private
 
     def signature_algorithm

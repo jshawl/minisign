@@ -6,6 +6,7 @@ A rubygem for creating and verifying [Minisign](http://jedisct1.github.io/minisi
   - [Read a public key](#read-a-public-key)
   - [Verify a signature](#verify-a-signature)
   - [Read a private key](#read-a-private-key)
+  - [Change the private key's password](#change-the-private-keys-password)
   - [Create a signature](#create-a-signature)
   - [Generate a key pair](#generate-a-key-pair)
 - [Local Development](#local-development)
@@ -39,6 +40,13 @@ public_key.verify(signature, message)
 ```rb
 password = "password" # optional, if the key is not encrypted
 private_key = Minisign::PrivateKey.new(File.read("minisign.key"), password)
+```
+
+### Change the private key's password
+
+```rb
+password = "new password"
+private_key.change_password! password
 ```
 
 ### Create a signature

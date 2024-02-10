@@ -107,4 +107,22 @@ describe Minisign::PrivateKey do
              )).to be(true)
     end
   end
+
+  describe '#change_password!' do
+    it 'changes the password' do
+      random_trusted_comment = SecureRandom.uuid
+      new_password = SecureRandom.uuid
+      original_public_key = @private_key.public_key
+      original_signature = @private_key.sign('example.txt', 'example', random_trusted_comment)
+      original_private_key = @private_key.to_s
+      @private_key.change_password! new_password
+      new_signature = @private_key.sign('example.txt', 'example', random_trusted_comment)
+      expect(original_signature.to_s).to eq(new_signature.to_s)
+      expect(original_public_key.to_s).to eq(@private_key.public_key.to_s)
+      expect(original_private_key.to_s).not_to eq(@private_key.to_s)
+      expect do
+        Minisign::PrivateKey.new(@private_key.to_s, new_password)
+      end.not_to raise_error
+    end
+  end
 end
