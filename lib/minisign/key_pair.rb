@@ -9,10 +9,9 @@ module Minisign
       @password = password
       @key_id = SecureRandom.bytes(8)
       @signing_key = Ed25519::SigningKey.generate
-      kd = key_data
 
-      @checksum = blake2b256("Ed#{kd}")
-      @keynum_sk = "#{kd}#{@checksum}"
+      @checksum = blake2b256("Ed#{key_data}")
+      @keynum_sk = "#{key_data}#{@checksum}"
 
       @kdf_salt = SecureRandom.bytes(32)
       @keynum_sk = xor(kdf_output, @keynum_sk.bytes).pack('C*') if @password
@@ -48,7 +47,7 @@ module Minisign
     end
 
     def key_data
-      "#{@key_id}#{@signing_key.to_bytes}#{@signing_key.verify_key.to_bytes}"
+      @key_data ||= "#{@key_id}#{@signing_key.to_bytes}#{@signing_key.verify_key.to_bytes}"
     end
 
     # 🤷
