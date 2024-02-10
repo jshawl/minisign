@@ -47,6 +47,8 @@ private_key = Minisign::PrivateKey.new(File.read("minisign.key"), password)
 ```rb
 password = "new password"
 private_key.change_password! password
+# or remove the password
+private_key.change_password! nil
 ```
 
 ### Create a signature
