@@ -1,21 +1,17 @@
 # frozen_string_literal: true
 
 module Minisign
-  # Parse ed25519 signing key from minisign private key
+  # The private key used to create signatures
   class PrivateKey
     include Utils
-    attr_reader :kdf_salt, :kdf_opslimit, :kdf_memlimit,
-                :key_id, :ed25519_public_key_bytes, :ed25519_private_key_bytes, :checksum
+    attr_reader :key_id
 
     # Parse signing information from the minisign private key
     #
     # @param str [String] The minisign private key
     # @param password [String] The password used to encrypt the private key
     # @example
-    #   Minisign::PrivateKey.new(
-    #     File.read("test/minisign.key")
-    #     'password'
-    #   )
+    #   Minisign::PrivateKey.new(File.read("test/minisign.key"), 'password')
     def initialize(str, password = nil)
       comment, data = str.split("\n")
       @password = password
@@ -27,6 +23,8 @@ module Minisign
       assert_valid_key!
     end
 
+    # Get the corresponding public key from the private key
+    #
     # @return [Minisign::PublicKey]
     def public_key
       data = Base64.strict_encode64("Ed#{@key_id.pack('C*')}#{@ed25519_public_key_bytes.pack('C*')}")

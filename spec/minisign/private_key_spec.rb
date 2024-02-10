@@ -36,16 +36,17 @@ describe Minisign::PrivateKey do
     end
 
     it 'parses the kdf_salt' do
-      expect(@private_key.kdf_salt).to eq([17, 255, 178, 97, 174, 94, 1, 125, 252, 62, 7, 107, 35, 116, 204, 199, 12,
-                                           190, 222, 200, 51, 166, 7, 25, 89, 5, 225, 56, 170, 157, 127, 219])
+      kdf_salt = @private_key.instance_variable_get('@kdf_salt')
+      expect(kdf_salt).to eq([17, 255, 178, 97, 174, 94, 1, 125, 252, 62, 7, 107, 35, 116, 204, 199, 12,
+                              190, 222, 200, 51, 166, 7, 25, 89, 5, 225, 56, 170, 157, 127, 219])
     end
 
     it 'parses the kdf_opslimit' do
-      expect(@private_key.kdf_opslimit).to eq(33_554_432)
+      expect(@private_key.instance_variable_get('@kdf_opslimit')).to eq(33_554_432)
     end
 
     it 'parses the kdf_memlimit' do
-      expect(@private_key.kdf_memlimit).to eq(1_073_741_824)
+      expect(@private_key.instance_variable_get('@kdf_memlimit')).to eq(1_073_741_824)
     end
 
     it 'parses the key id' do
@@ -53,30 +54,21 @@ describe Minisign::PrivateKey do
     end
 
     it 'parses the public key' do
-      key = @private_key.ed25519_public_key_bytes
+      key = @private_key.instance_variable_get('@ed25519_public_key_bytes')
       expect(key).to eq([108, 35, 192, 26, 47, 128, 233, 165, 133, 38, 242, 5, 76, 55, 135, 40,
                          103, 72, 230, 43, 184, 117, 219, 37, 173, 250, 196, 122, 252, 174, 173, 140])
     end
 
     it 'parses the secret key' do
-      key = @private_key.ed25519_private_key_bytes
+      key = @private_key.instance_variable_get('@ed25519_private_key_bytes')
       expect(key).to eq([65, 87, 110, 33, 168, 130, 118, 100, 249, 200, 160, 167, 47, 59, 141,
                          122, 156, 38, 80, 199, 139, 1, 21, 18, 116, 110, 204, 131, 199, 202, 181, 87])
     end
 
     it 'parses the checksum' do
-      expect(@private_key.checksum).to eq([19, 146, 239, 121, 33, 164, 216, 219, 8, 104, 111, 52, 198, 78, 21, 236,
-                                           113, 255, 174, 47, 39, 216, 61, 198, 233, 161, 233, 143, 84, 246, 255, 150])
-
-      key_data = [
-        [69, 100],
-        @private_key.key_id,
-        @private_key.ed25519_private_key_bytes,
-        @private_key.ed25519_public_key_bytes
-      ].inject(&:+).pack('C*')
-
-      computed_checksum = blake2b256(key_data).bytes
-      expect(@private_key.checksum).to eq(computed_checksum)
+      checksum = @private_key.instance_variable_get('@checksum')
+      expect(checksum).to eq([19, 146, 239, 121, 33, 164, 216, 219, 8, 104, 111, 52, 198, 78, 21, 236,
+                              113, 255, 174, 47, 39, 216, 61, 198, 233, 161, 233, 143, 84, 246, 255, 150])
     end
 
     it 'can be written to a file' do

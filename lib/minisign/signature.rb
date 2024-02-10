@@ -26,15 +26,17 @@ module Minisign
       @lines[2].split('trusted comment: ')[1]
     end
 
+    # @return [String] the signature for the trusted comment
     def trusted_comment_signature
       Base64.decode64(@lines[3])
     end
 
-    # @return [String] the signature
+    # @return [String] the global signature
     def signature
       encoded_signature[10..]
     end
 
+    # @return [String] The signature that can be written to a file
     def to_s
       "#{@lines.join("\n")}\n"
     end
