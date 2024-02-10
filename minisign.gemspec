@@ -8,6 +8,7 @@ Gem::Specification.new do |s|
   s.authors     = ['Jesse Shawl']
   s.email       = 'jesse@jesse.sh'
   s.files       = Dir['lib/**/*']
+  s.executables << "minisign"
   s.homepage    =
     'https://rubygems.org/gems/minisign'
   s.license = 'MIT'
