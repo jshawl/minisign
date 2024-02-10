@@ -123,6 +123,11 @@ describe Minisign::PrivateKey do
       expect do
         Minisign::PrivateKey.new(@private_key.to_s, new_password)
       end.not_to raise_error
+
+      File.write('test/generated/new-password.key', @private_key)
+      path = 'test/generated'
+      command = "echo #{new_password} | #{path}/minisign -Sm #{path}/.keep -s #{path}/new-password.key"
+      expect(system(command)).to be(true)
     end
   end
 end
