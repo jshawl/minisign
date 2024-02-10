@@ -63,6 +63,7 @@ module Minisign
 
     def change_password!(new_password)
       @password = new_password
+      @bytes[2..3] = [0, 0] if new_password.nil? # kdf_algorithm
     end
 
     private
