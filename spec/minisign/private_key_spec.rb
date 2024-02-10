@@ -107,4 +107,45 @@ describe Minisign::PrivateKey do
              )).to be(true)
     end
   end
+
+  describe '#change_password!' do
+    before do
+      @private_key = Minisign::PrivateKey.new(File.read('test/minisign.key'), 'password')
+    end
+    it 'changes the password' do
+      random_trusted_comment = SecureRandom.uuid
+      new_password = SecureRandom.uuid
+      original_public_key = @private_key.public_key
+      original_signature = @private_key.sign('example.txt', 'example', random_trusted_comment)
+      original_private_key = @private_key.to_s
+      @private_key.change_password! new_password
+      new_signature = @private_key.sign('example.txt', 'example', random_trusted_comment)
+      expect(original_signature.to_s).to eq(new_signature.to_s)
+      expect(original_public_key.to_s).to eq(@private_key.public_key.to_s)
+      expect(original_private_key.to_s).not_to eq(@private_key.to_s)
+      expect do
+        Minisign::PrivateKey.new(@private_key.to_s, new_password)
+      end.not_to raise_error
+      expect do
+        Minisign::PrivateKey.new(@private_key.to_s)
+      end.to raise_error('Missing password for encrypted key')
+
+      File.write('test/generated/new-password.key', @private_key)
+      path = 'test/generated'
+      command = "echo #{new_password} | #{path}/minisign -Sm #{path}/.keep -s #{path}/new-password.key"
+      expect(system(command)).to be(true)
+    end
+
+    it 'removes the password if nil' do
+      @private_key.change_password! nil
+      expect do
+        Minisign::PrivateKey.new(@private_key.to_s)
+      end.not_to raise_error
+      File.write('test/generated/removed-password.key', @private_key)
+      path = 'test/generated'
+      # does not prompt for password
+      command = "#{path}/minisign -Sm #{path}/.keep -s #{path}/removed-password.key"
+      expect(system(command)).to be(true)
+    end
+  end
 end

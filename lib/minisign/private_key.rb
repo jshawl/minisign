@@ -61,6 +61,14 @@ module Minisign
       "untrusted comment: #{@untrusted_comment}\n#{Base64.strict_encode64(data)}\n"
     end
 
+    # Change or remove a password
+    #
+    # @param new_password [String]
+    def change_password!(new_password)
+      @password = new_password
+      @bytes[2..3] = [0, 0] if new_password.nil? # kdf_algorithm
+    end
+
     private
 
     def signature_algorithm
