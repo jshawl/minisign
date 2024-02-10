@@ -1,22 +1,23 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'minisign'
 
-USAGE = <<ENDUSAGE
-Usage:
-minisign -G [-f] [-p pubkey_file] [-s seckey_file] [-W]
+USAGE = <<~ENDUSAGE
+  Usage:
+  minisign -G [-f] [-p pubkey_file] [-s seckey_file] [-W]
 ENDUSAGE
 
-HELP = <<ENDHELP
+HELP = <<~ENDHELP
 
--G                  generate a new key pair
--f                  force. Combined with -G, overwrite a previous key pair
--p <pubkey_file>    public key file (default: ./minisign.pub)
--s <seckey_file>    secret key file (default: ~/.minisign/minisign.key)
--W                  do not encrypt/decrypt the secret key with a password
+  -G                  generate a new key pair
+  -f                  force. Combined with -G, overwrite a previous key pair
+  -p <pubkey_file>    public key file (default: ./minisign.pub)
+  -s <seckey_file>    secret key file (default: ~/.minisign/minisign.key)
+  -W                  do not encrypt/decrypt the secret key with a password
 ENDHELP
 
 if ARGV.empty?
-puts USAGE
-puts HELP
+  puts USAGE
+  puts HELP
 end
