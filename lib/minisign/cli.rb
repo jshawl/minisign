@@ -106,5 +106,15 @@ module Minisign
       signature = private_key.sign(options[:m], File.read(options[:m]), options[:t])
       File.write(options[:x], signature)
     end
+
+    def self.verify(options)
+      options[:x] ||= "#{options[:m]}.minisig"
+      options[:p] ||= './minisign.pub'
+      options[:P] ||= File.read(options[:p])
+      # TODO: -q / -Q
+      public_key = Minisign::PublicKey.new(options[:P])
+      signature = Minisign::Signature.new(File.read(options[:x]))
+      puts public_key.verify(signature, File.read(options[:m]))
+    end
   end
 end

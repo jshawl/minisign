@@ -9,26 +9,17 @@ Signal.trap('INT') { exit }
 
 options = {}
 op = OptionParser.new do |opts|
-  opts.on('-G') do |g|
-    options[:G] = g
+  boolean_opts = %w[G R C W S V f]
+  argument_opts = %w[t m x s p]
+  boolean_opts.each do |o|
+    opts.on("-#{o}") do |boolean|
+      options[o.to_sym] = boolean
+    end
   end
-  opts.on('-R') do |r|
-    options[:R] = r
-  end
-  opts.on('-C') do |c|
-    options[:C] = c
-  end
-  opts.on('-W') do |w|
-    options[:W] = w
-  end
-  opts.on('-f') do |f|
-    options[:f] = f
-  end
-  opts.on('-sSECRET_KEY') do |s|
-    options[:s] = s
-  end
-  opts.on('-pPUBLIC_KEY') do |p|
-    options[:p] = p
+  argument_opts.each do |o|
+    opts.on("-#{o}#{o.upcase}") do |value|
+      options[o.to_sym] = value
+    end
   end
 end
 
@@ -44,4 +35,6 @@ end
 
 Minisign::CLI.generate(options) if options[:G]
 Minisign::CLI.recreate(options) if options[:R]
-Minisign::CLI.recreate(options) if options[:C]
+Minisign::CLI.change_password(options) if options[:C]
+Minisign::CLI.sign(options) if options[:S]
+Minisign::CLI.verify(options) if options[:V]
