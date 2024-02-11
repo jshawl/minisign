@@ -76,7 +76,7 @@ module Minisign
     end
 
     def self.change_password(options)
-      secret_key = options[:s] || "#{Dir.home}/.minisign/minisign.key"
+      options[:s] || "#{Dir.home}/.minisign/minisign.key"
       print 'Password: '
       private_key = Minisign::PrivateKey.new(File.read(options[:s]), prompt)
       print 'New Password: '
