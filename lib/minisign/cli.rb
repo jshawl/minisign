@@ -5,7 +5,7 @@ require 'io/console'
 module Minisign
   # The command line interface
   module CLI
-    # lol
+    # rubocop:disable Metrics/MethodLength
     def self.help
       puts '-G                  generate a new key pair'
       puts '-R                  recreate a public key file from a secret key file'
@@ -19,13 +19,16 @@ module Minisign
       puts '-P                  <pubkey> public key, as a base64 string'
       puts '-x                  <sigfile> signature file (default: <file>.minisig)'
     end
+    # rubocop:enable Metrics/MethodLength
 
     def self.usage
       puts 'Usage:'
       puts 'minisign -G [-f] [-p pubkey_file] [-s seckey_file] [-W]'
       puts 'minisign -R [-s seckey_file] [-p pubkey_file]'
       puts 'minisign -C [-s seckey_file] [-W]'
+      # rubocop:disable Layout/LineLength
       puts 'minisign -S [-l] [-x sig_file] [-s seckey_file] [-c untrusted_comment] [-t trusted_comment] -m file [file ...]'
+      # rubocop:enable Layout/LineLength
       puts 'minisign -V [-H] [-x sig_file] [-p pubkey_file | -P pubkey] [-o] [-q] -m file'
     end
 
@@ -94,14 +97,14 @@ module Minisign
     end
 
     def self.sign(options)
-        # TODO multiple files
-        options[:x] ||= "#{options[:m]}.minisig"
-        options[:s] ||= "#{Dir.home}/.minisign/minisign.key"
-        print 'Password: '
-        # TODO unencrypted private keys shouldn't prompt
-        private_key = Minisign::PrivateKey.new(File.read(options[:s]), prompt)
-        signature = private_key.sign(options[:m], File.read(options[:m]), options[:t])
-        File.write(options[:x], signature)
+      # TODO: multiple files
+      options[:x] ||= "#{options[:m]}.minisig"
+      options[:s] ||= "#{Dir.home}/.minisign/minisign.key"
+      print 'Password: '
+      # TODO: unencrypted private keys shouldn't prompt
+      private_key = Minisign::PrivateKey.new(File.read(options[:s]), prompt)
+      signature = private_key.sign(options[:m], File.read(options[:m]), options[:t])
+      File.write(options[:x], signature)
     end
   end
 end

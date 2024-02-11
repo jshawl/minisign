@@ -93,10 +93,10 @@ describe Minisign::CLI do
       system(
         "echo 'password' | test/generated/minisign -Sm test/generated/.keep -s test/minisign.key -t '#{options[:t]}'"
       )
-      jedisct1_signature = File.read("test/generated/.keep.minisig")
-      File.delete("test/generated/.keep.minisig")
+      jedisct1_signature = File.read('test/generated/.keep.minisig')
+      File.delete('test/generated/.keep.minisig')
       Minisign::CLI.sign(options)
-      signature = File.read("test/generated/.keep.minisig")
+      signature = File.read('test/generated/.keep.minisig')
       expect(jedisct1_signature).to eq(signature)
     end
   end
