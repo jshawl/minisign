@@ -80,4 +80,24 @@ describe Minisign::CLI do
       end.not_to raise_error
     end
   end
+
+  describe '.sign' do
+    it 'signs a file' do
+      allow(Minisign::CLI).to receive(:prompt).and_return('password')
+      options = {
+        s: 'test/minisign.key',
+        c: 'the untrusted comment',
+        t: 'the trusted comment',
+        m: 'test/generated/.keep'
+      }
+      system(
+        "echo 'password' | test/generated/minisign -Sm test/generated/.keep -s test/minisign.key -t '#{options[:t]}'"
+      )
+      jedisct1_signature = File.read("test/generated/.keep.minisig")
+      File.delete("test/generated/.keep.minisig")
+      Minisign::CLI.sign(options)
+      signature = File.read("test/generated/.keep.minisig")
+      expect(jedisct1_signature).to eq(signature)
+    end
+  end
 end

@@ -9,16 +9,24 @@ module Minisign
     def self.help
       puts '-G                  generate a new key pair'
       puts '-R                  recreate a public key file from a secret key file'
+      puts '-C                  change/remove the password of the secret key'
+      puts '-S                  sign files'
       puts '-f                  force. Combined with -G, overwrite a previous key pair'
-      puts '-p <pubkey_file>    public key file (default: ./minisign.pub)'
-      puts '-s <seckey_file>    secret key file (default: ~/.minisign/minisign.key)'
+      puts '-p                  <pubkey_file> public key file (default: ./minisign.pub)'
+      puts '-s                  <seckey_file> secret key file (default: ~/.minisign/minisign.key)'
       puts '-W                  do not encrypt/decrypt the secret key with a password'
+      puts '-p                  <pubkey_file> public key file (default: ./minisign.pub)'
+      puts '-P                  <pubkey> public key, as a base64 string'
+      puts '-x                  <sigfile> signature file (default: <file>.minisig)'
     end
 
     def self.usage
       puts 'Usage:'
       puts 'minisign -G [-f] [-p pubkey_file] [-s seckey_file] [-W]'
       puts 'minisign -R [-s seckey_file] [-p pubkey_file]'
+      puts 'minisign -C [-s seckey_file] [-W]'
+      puts 'minisign -S [-l] [-x sig_file] [-s seckey_file] [-c untrusted_comment] [-t trusted_comment] -m file [file ...]'
+      puts 'minisign -V [-H] [-x sig_file] [-p pubkey_file | -P pubkey] [-o] [-q] -m file'
     end
 
     def self.prompt
@@ -76,13 +84,24 @@ module Minisign
     end
 
     def self.change_password(options)
-      options[:s] || "#{Dir.home}/.minisign/minisign.key"
+      options[:s] ||= "#{Dir.home}/.minisign/minisign.key"
       print 'Password: '
       private_key = Minisign::PrivateKey.new(File.read(options[:s]), prompt)
       print 'New Password: '
       new_password = options[:W] ? nil : prompt
       private_key.change_password! new_password
       File.write(options[:s], private_key)
+    end
+
+    def self.sign(options)
+        # TODO multiple files
+        options[:x] ||= "#{options[:m]}.minisig"
+        options[:s] ||= "#{Dir.home}/.minisign/minisign.key"
+        print 'Password: '
+        # TODO unencrypted private keys shouldn't prompt
+        private_key = Minisign::PrivateKey.new(File.read(options[:s]), prompt)
+        signature = private_key.sign(options[:m], File.read(options[:m]), options[:t])
+        File.write(options[:x], signature)
     end
   end
 end
