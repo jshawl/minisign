@@ -100,4 +100,16 @@ describe Minisign::CLI do
       expect(jedisct1_signature).to eq(signature)
     end
   end
+
+  describe '.verify' do
+    it 'verifies signatures' do
+      options = {
+        p: 'test/minisign.pub',
+        m: 'test/generated/.keep'
+      }
+      expect do
+        Minisign::CLI.verify(options)
+      end.not_to raise_error
+    end
+  end
 end
