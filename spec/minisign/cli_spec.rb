@@ -70,6 +70,8 @@ describe Minisign::CLI do
       end.not_to raise_error
     end
 
+    it 'changes the password for the private key without a password'
+
     it 'removes the password for the private key' do
       allow(Minisign::CLI).to receive(:prompt).and_return(@old_password)
       Minisign::CLI.change_password(@options.merge({ W: true }))
