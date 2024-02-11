@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Support for changing or removing the password from the private key
+- `minisign` executable
 
 ## [0.1.0] - 2024-02-09
 
