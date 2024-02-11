@@ -12,6 +12,12 @@ op = OptionParser.new do |opts|
   opts.on('-G') do |g|
     options[:G] = g
   end
+  opts.on('-R') do |r|
+    options[:R] = r
+  end
+  opts.on('-C') do |c|
+    options[:C] = c
+  end
   opts.on('-f') do |f|
     options[:f] = f
   end
@@ -35,3 +41,4 @@ end
 
 Minisign::CLI.generate(options) if options[:G]
 Minisign::CLI.recreate(options) if options[:R]
+Minisign::CLI.recreate(options) if options[:C]
