@@ -19,6 +19,10 @@ module Minisign
       puts 'minisign -G [-f] [-p pubkey_file] [-s seckey_file] [-W]'
     end
 
+    def self.prompt
+      $stdin.noecho(&:gets).chomp
+    end
+
     def self.prevent_overwrite!(file)
       return unless File.exist? file
 
@@ -44,7 +48,7 @@ module Minisign
         File.write(public_key, keypair.public_key)
       else
         print 'Password: '
-        password = $stdin.noecho(&:gets).chomp
+        password = prompt
         print "\nDeriving a key from the password in order to encrypt the secret key..."
         keypair = Minisign::KeyPair.new(password)
         File.write(secret_key, keypair.private_key)

@@ -21,7 +21,7 @@ describe Minisign::CLI do
         s: "test/generated/cli/#{keyname}.key",
         W: true
       }
-      expect($stdin).not_to receive(:gets)
+      expect(Minisign::CLI).not_to receive(:prompt)
       Minisign::CLI.generate(options)
     end
     it 'writes the key files' do
@@ -31,7 +31,7 @@ describe Minisign::CLI do
         p: "test/generated/cli/#{keyname}.pub",
         s: "test/generated/cli/#{keyname}.key"
       }
-      allow($stdin).to receive(:gets).and_return(password)
+      allow(Minisign::CLI).to receive(:prompt).and_return(password)
       Minisign::CLI.generate(options)
       expect(File.exist?(options[:p])).to eq(true)
       expect(File.exist?(options[:p])).to eq(true)
