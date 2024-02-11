@@ -18,6 +18,9 @@ op = OptionParser.new do |opts|
   opts.on('-C') do |c|
     options[:C] = c
   end
+  opts.on('-W') do |w|
+    options[:W] = w
+  end
   opts.on('-f') do |f|
     options[:f] = f
   end
