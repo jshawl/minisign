@@ -9,6 +9,7 @@ A rubygem for creating and verifying [Minisign](http://jedisct1.github.io/minisi
   - [Change the private key's password](#change-the-private-keys-password)
   - [Create a signature](#create-a-signature)
   - [Generate a key pair](#generate-a-key-pair)
+- [CLI](#cli)
 - [Local Development](#local-development)
 - [Documentation](#documentation)
 
@@ -68,6 +69,14 @@ keypair = Minisign::KeyPair.new(password)
 keypair.private_key # Minisign::PrivateKey
 keypair.public_key # Minisign::PublicKey
 ```
+
+## CLI
+
+This gem provides an executable `minisign` that implements the CLI
+provided by [jedisct1/minisign](https://github.com/jedisct1/minisign).
+
+See command line options [here](https://jedisct1.github.io/minisign/#usage)
+or run the executable without any arguments to see usage options.
 
 ## Local Development
 
