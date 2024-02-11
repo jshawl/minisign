@@ -8,6 +8,7 @@ module Minisign
     # lol
     def self.help
       puts '-G                  generate a new key pair'
+      puts '-R                  recreate a public key file from a secret key file'
       puts '-f                  force. Combined with -G, overwrite a previous key pair'
       puts '-p <pubkey_file>    public key file (default: ./minisign.pub)'
       puts '-s <seckey_file>    secret key file (default: ~/.minisign/minisign.key)'
@@ -17,6 +18,7 @@ module Minisign
     def self.usage
       puts 'Usage:'
       puts 'minisign -G [-f] [-p pubkey_file] [-s seckey_file] [-W]'
+      puts 'minisign -R [-s seckey_file] [-p pubkey_file]'
     end
 
     def self.prompt
@@ -58,5 +60,19 @@ module Minisign
     end
     # rubocop:enable Metrics/MethodLength
     # rubocop:enable Metrics/AbcSize
+
+    def self.recreate(options)
+      secret_key = options[:s] || "#{Dir.home}/.minisign/minisign.key"
+      public_key = options[:p] || './minisign.pub'
+      private_key_contents = File.read(secret_key)
+      begin
+        # try without a password first
+        private_key = Minisign::PrivateKey.new(private_key_contents)
+      rescue RuntimeError
+        print 'Password: '
+        private_key = Minisign::PrivateKey.new(private_key_contents, prompt)
+      end
+      File.write(public_key, private_key.public_key)
+    end
   end
 end

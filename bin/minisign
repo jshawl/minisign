@@ -34,3 +34,4 @@ rescue OptionParser::InvalidOption
 end
 
 Minisign::CLI.generate(options) if options[:G]
+Minisign::CLI.recreate(options) if options[:R]

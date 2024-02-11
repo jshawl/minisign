@@ -37,4 +37,19 @@ describe Minisign::CLI do
       expect(File.exist?(options[:p])).to eq(true)
     end
   end
+
+  describe '.recreate' do
+    it 'recreates the public key from a private key' do
+      keyname = SecureRandom.uuid
+      options = {
+        p: "test/generated/#{keyname}.pub",
+        s: 'test/minisign.key'
+      }
+      allow(Minisign::CLI).to receive(:prompt).and_return('password')
+      Minisign::CLI.recreate(options)
+      new_public_key = File.read(options[:p])
+      existing_public_key = File.read('test/minisign.pub').gsub(' yay', '')
+      expect(new_public_key).to eq(existing_public_key)
+    end
+  end
 end
