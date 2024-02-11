@@ -52,4 +52,32 @@ describe Minisign::CLI do
       expect(new_public_key).to eq(existing_public_key)
     end
   end
+
+  describe '.change_password' do
+    before do
+      FileUtils.cp('test/minisign.key', 'test/generated/minisign.key')
+      @options = {
+        s: 'test/generated/minisign.key'
+      }
+      @old_password = 'password'
+    end
+    it 'changes the password for the private key' do
+      new_password = SecureRandom.uuid
+      allow(Minisign::CLI).to receive(:prompt).and_return(@old_password, new_password)
+      Minisign::CLI.change_password(@options)
+      expect do
+        Minisign::PrivateKey.new(File.read(@options[:s]), new_password)
+      end.not_to raise_error
+    end
+
+    it 'changes the password for the private key without a password'
+
+    it 'removes the password for the private key' do
+      allow(Minisign::CLI).to receive(:prompt).and_return(@old_password)
+      Minisign::CLI.change_password(@options.merge({ W: true }))
+      expect do
+        Minisign::PrivateKey.new(File.read(@options[:s]))
+      end.not_to raise_error
+    end
+  end
 end

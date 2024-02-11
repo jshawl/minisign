@@ -74,5 +74,15 @@ module Minisign
       end
       File.write(public_key, private_key.public_key)
     end
+
+    def self.change_password(options)
+      options[:s] || "#{Dir.home}/.minisign/minisign.key"
+      print 'Password: '
+      private_key = Minisign::PrivateKey.new(File.read(options[:s]), prompt)
+      print 'New Password: '
+      new_password = options[:W] ? nil : prompt
+      private_key.change_password! new_password
+      File.write(options[:s], private_key)
+    end
   end
 end
