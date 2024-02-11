@@ -1,23 +1,36 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'io/console'
 require 'minisign'
+require 'optparse'
 
-USAGE = <<~ENDUSAGE
-  Usage:
-  minisign -G [-f] [-p pubkey_file] [-s seckey_file] [-W]
-ENDUSAGE
+Signal.trap('INT') { exit }
 
-HELP = <<~ENDHELP
-
-  -G                  generate a new key pair
-  -f                  force. Combined with -G, overwrite a previous key pair
-  -p <pubkey_file>    public key file (default: ./minisign.pub)
-  -s <seckey_file>    secret key file (default: ~/.minisign/minisign.key)
-  -W                  do not encrypt/decrypt the secret key with a password
-ENDHELP
-
-if ARGV.empty?
-  puts USAGE
-  puts HELP
+options = {}
+op = OptionParser.new do |opts|
+  opts.on('-G') do |g|
+    options[:G] = g
+  end
+  opts.on('-f') do |f|
+    options[:f] = f
+  end
+  opts.on('-sSECRET_KEY') do |s|
+    options[:s] = s
+  end
+  opts.on('-pPUBLIC_KEY') do |p|
+    options[:p] = p
+  end
 end
+
+begin
+  op.parse!
+  raise OptionParser::InvalidOption if options.keys.empty?
+rescue OptionParser::InvalidOption
+  Minisign::CLI.usage
+  puts ''
+  Minisign::CLI.help
+  exit 1
+end
+
+Minisign::CLI.generate(options) if options[:G]
