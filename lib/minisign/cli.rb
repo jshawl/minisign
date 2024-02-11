@@ -80,7 +80,7 @@ module Minisign
       print 'Password: '
       private_key = Minisign::PrivateKey.new(File.read(options[:s]), prompt)
       print 'New Password: '
-      new_password = prompt
+      new_password = options[:W] ? nil : prompt
       private_key.change_password! new_password
       File.write(options[:s], private_key)
     end
