@@ -9,9 +9,9 @@ describe 'e2e' do
   it 'generates a key pair' do
     path = 'test/generated/cli'
     keyname = 'jedisct1-encrypted'
-    exe = 'test/generated/minisign'
+    exe = 'minisign'
     password = SecureRandom.uuid
-    command = "echo '#{password}\n#{password}' | #{exe} -G -p #{path}/#{keyname}.pub -s #{path}/#{keyname}.key"
+    command = "echo '#{password}' | #{exe} -G -p #{path}/#{keyname}.pub -s #{path}/#{keyname}.key"
     `#{command}`
     # prompt -f
     expect(`#{command} 2>&1`).to match('Key generation aborted:')

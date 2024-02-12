@@ -41,7 +41,11 @@ module Minisign
     # rubocop:enable Metrics/AbcSize
 
     def self.prompt
-      $stdin.noecho(&:gets).chomp
+      if $stdin.tty?
+        $stdin.noecho(&:gets).chomp
+      else
+        $stdin.gets.chomp
+      end
     end
 
     def self.prevent_overwrite!(file)
@@ -73,8 +77,12 @@ module Minisign
         print "\nDeriving a key from the password in order to encrypt the secret key..."
         keypair = Minisign::KeyPair.new(password)
         File.write(secret_key, keypair.private_key)
-        File.write(public_key, keypair.public_key)
         print " done\n"
+        puts "The secret key was saved as #{options[:s]} - Keep it secret!"
+        File.write(public_key, keypair.public_key)
+        puts "The public key was saved as #{options[:p]} - That one can be public."
+        pubkey = keypair.public_key.to_s.split("\n").pop
+        puts "minisign -Vm <file> -P #{pubkey}"
       end
     end
     # rubocop:enable Metrics/MethodLength
