@@ -7,17 +7,26 @@ module Minisign
   module CLI
     # rubocop:disable Metrics/MethodLength
     def self.help
-      puts '-G                  generate a new key pair'
-      puts '-R                  recreate a public key file from a secret key file'
-      puts '-C                  change/remove the password of the secret key'
-      puts '-S                  sign files'
-      puts '-f                  force. Combined with -G, overwrite a previous key pair'
-      puts '-p                  <pubkey_file> public key file (default: ./minisign.pub)'
-      puts '-s                  <seckey_file> secret key file (default: ~/.minisign/minisign.key)'
-      puts '-W                  do not encrypt/decrypt the secret key with a password'
-      puts '-p                  <pubkey_file> public key file (default: ./minisign.pub)'
-      puts '-P                  <pubkey> public key, as a base64 string'
-      puts '-x                  <sigfile> signature file (default: <file>.minisig)'
+      puts '-G                generate a new key pair'
+      puts '-R                recreate a public key file from a secret key file'
+      puts '-C                change/remove the password of the secret key'
+      puts '-S                sign files'
+      puts '-V                verify that a signature is valid for a given file'
+      puts '-m <file>         file to sign/verify'
+      # TODO: implement
+      puts '-o                combined with -V, output the file content after verification'
+      puts '-p <pubkey_file>  public key file (default: ./minisign.pub)'
+      puts '-P <pubkey>       public key, as a base64 string'
+      puts '-s <seckey_file>  secret key file (default: ~/.minisign/minisign.key)'
+      puts '-W                do not encrypt/decrypt the secret key with a password'
+      puts '-x <sigfile>      signature file (default: <file>.minisig)'
+      puts '-c <comment>      add a one-line untrusted comment'
+      puts '-t <comment>      add a one-line trusted comment'
+      puts '-q                quiet mode, suppress output'
+      puts '-Q                pretty quiet mode, only print the trusted comment'
+      puts '-f                force. Combined with -G, overwrite a previous key pair'
+      puts '-v                display version number'
+      puts ''
     end
     # rubocop:enable Metrics/MethodLength
 
@@ -26,9 +35,8 @@ module Minisign
       puts 'minisign -G [-f] [-p pubkey_file] [-s seckey_file] [-W]'
       puts 'minisign -R [-s seckey_file] [-p pubkey_file]'
       puts 'minisign -C [-s seckey_file] [-W]'
-      # rubocop:disable Layout/LineLength
-      puts 'minisign -S [-l] [-x sig_file] [-s seckey_file] [-c untrusted_comment] [-t trusted_comment] -m file [file ...]'
-      # rubocop:enable Layout/LineLength
+      puts 'minisign -S [-l] [-x sig_file] [-s seckey_file] [-c untrusted_comment]'
+      puts '            [-t trusted_comment] -m file [file ...]'
       puts 'minisign -V [-H] [-x sig_file] [-p pubkey_file | -P pubkey] [-o] [-q] -m file'
     end
 
