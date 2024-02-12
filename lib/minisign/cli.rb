@@ -5,8 +5,17 @@ require 'io/console'
 module Minisign
   # The command line interface
   module CLI
+    # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
-    def self.help
+    def self.usage
+      puts 'Usage:'
+      puts 'minisign -G [-f] [-p pubkey_file] [-s seckey_file] [-W]'
+      puts 'minisign -R [-s seckey_file] [-p pubkey_file]'
+      puts 'minisign -C [-s seckey_file] [-W]'
+      puts 'minisign -S [-l] [-x sig_file] [-s seckey_file] [-c untrusted_comment]'
+      puts '            [-t trusted_comment] -m file [file ...]'
+      puts 'minisign -V [-H] [-x sig_file] [-p pubkey_file | -P pubkey] [-o] [-q] -m file'
+      puts ''
       puts '-G                generate a new key pair'
       puts '-R                recreate a public key file from a secret key file'
       puts '-C                change/remove the password of the secret key'
@@ -29,16 +38,7 @@ module Minisign
       puts ''
     end
     # rubocop:enable Metrics/MethodLength
-
-    def self.usage
-      puts 'Usage:'
-      puts 'minisign -G [-f] [-p pubkey_file] [-s seckey_file] [-W]'
-      puts 'minisign -R [-s seckey_file] [-p pubkey_file]'
-      puts 'minisign -C [-s seckey_file] [-W]'
-      puts 'minisign -S [-l] [-x sig_file] [-s seckey_file] [-c untrusted_comment]'
-      puts '            [-t trusted_comment] -m file [file ...]'
-      puts 'minisign -V [-H] [-x sig_file] [-p pubkey_file | -P pubkey] [-o] [-q] -m file'
-    end
+    # rubocop:enable Metrics/AbcSize
 
     def self.prompt
       $stdin.noecho(&:gets).chomp
