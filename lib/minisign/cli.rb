@@ -2,6 +2,7 @@
 
 require 'io/console'
 
+# rubocop:disable Metrics/ModuleLength
 module Minisign
   # The command line interface
   module CLI
@@ -41,11 +42,7 @@ module Minisign
     # rubocop:enable Metrics/AbcSize
 
     def self.prompt
-      if $stdin.tty?
-        $stdin.noecho(&:gets).chomp
-      else
-        $stdin.gets.chomp
-      end
+      $stdin.tty? ? $stdin.noecho(&:gets).chomp : $stdin.gets.chomp
     end
 
     def self.prevent_overwrite!(file)
@@ -134,3 +131,5 @@ module Minisign
     end
   end
 end
+
+# rubocop:enable Metrics/ModuleLength

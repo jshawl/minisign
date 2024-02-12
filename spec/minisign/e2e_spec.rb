@@ -11,6 +11,7 @@ describe 'e2e' do
     keyname = 'jedisct1-encrypted'
     exe = 'minisign'
     password = SecureRandom.uuid
+    # TODO: prompt a second time for password confirmation
     command = "echo '#{password}' | #{exe} -G -p #{path}/#{keyname}.pub -s #{path}/#{keyname}.key"
     `#{command}`
     # prompt -f
