@@ -22,13 +22,13 @@ describe Minisign::PrivateKey do
     it 'raises if the private key requires a password but is not supplied' do
       expect do
         Minisign::PrivateKey.new(File.read('test/minisign.key'))
-      end.to raise_error('Missing password for encrypted key')
+      end.to raise_error(Minisign::PasswordMissingError, 'Missing password for encrypted key')
     end
 
     it 'raises if the password is incorrect for the private key' do
       expect do
         Minisign::PrivateKey.new(File.read('test/minisign.key'), 'not the right password')
-      end.to raise_error('Wrong password for that key')
+      end.to raise_error(Minisign::PasswordIncorrectError, 'Wrong password for that key')
     end
 
     it 'parses the cksum_algorithm' do
@@ -128,7 +128,7 @@ describe Minisign::PrivateKey do
       end.not_to raise_error
       expect do
         Minisign::PrivateKey.new(@private_key.to_s)
-      end.to raise_error('Missing password for encrypted key')
+      end.to raise_error(Minisign::PasswordMissingError, 'Missing password for encrypted key')
 
       File.write('test/generated/new-password.key', @private_key)
       path = 'test/generated'

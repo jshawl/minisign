@@ -34,12 +34,8 @@ module Minisign
     # @raise RuntimeError on mismatching key ids
     def verify(signature, message)
       assert_matching_key_ids!(signature.key_id, key_id)
-      ed25519_verify_key.verify(signature.signature, blake2b512(message))
-      begin
-        ed25519_verify_key.verify(signature.trusted_comment_signature, signature.signature + signature.trusted_comment)
-      rescue Ed25519::VerifyError
-        raise 'Comment signature verification failed'
-      end
+      verify_message_signature(signature.signature, message)
+      verify_comment_signature(signature.trusted_comment_signature, signature.signature + signature.trusted_comment)
       "Signature and comment signature verified\nTrusted comment: #{signature.trusted_comment}"
     end
 
@@ -49,6 +45,18 @@ module Minisign
     end
 
     private
+
+    def verify_comment_signature(signature, comment)
+      ed25519_verify_key.verify(signature, comment)
+    rescue Ed25519::VerifyError
+      raise Minisign::SignatureVerificationError, 'Comment signature verification failed'
+    end
+
+    def verify_message_signature(signature, message)
+      ed25519_verify_key.verify(signature, blake2b512(message))
+    rescue Ed25519::VerifyError => e
+      raise Minisign::SignatureVerificationError, e
+    end
 
     def untrusted_comment
       if @lines.length == 1
@@ -75,7 +83,10 @@ module Minisign
     end
 
     def assert_matching_key_ids!(key_id1, key_id2)
-      raise "Signature key id is #{key_id1}\nbut the key id in the public key is #{key_id2}" unless key_id1 == key_id2
+      return if key_id1 == key_id2
+
+      raise Minisign::SignatureVerificationError,
+            "Signature key id is #{key_id1}\nbut the key id in the public key is #{key_id2}"
     end
   end
 end
