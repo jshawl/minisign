@@ -35,7 +35,13 @@ describe 'e2e' do
     expect(ruby_signature).to eq(jedisct1_signature)
   end
   it 'verifies files' do
+    path = 'test/generated'
     command = "minisign -Vm #{path}/.keep -p test/minisign.pub"
     expect(`#{command}`).to match(/Signature and comment signature verified\nTrusted comment: [a-z0-9-]+/)
+    command = "minisign -Vm #{path}/.keep -p test/minisign.pub -Q"
+    expect(`#{command}`).to match(/^[a-z0-9-]+$/)
+    command = "minisign -Vm #{path}/.keep -p test/minisign.pub -q"
+    expect(`#{command}`).to eq('')
   end
+  it 'shows an error message when the signature is invalid'
 end
