@@ -90,8 +90,12 @@ module Minisign
 
     # @raise [RuntimeError] if the extracted public key does not match the derived public key
     def assert_valid_key!
-      raise 'Missing password for encrypted key' if kdf_algorithm.bytes.sum != 0 && @password.nil?
-      raise 'Wrong password for that key' if @ed25519_public_key_bytes != ed25519_signing_key.verify_key.to_bytes.bytes
+      if kdf_algorithm.bytes.sum != 0 && @password.nil?
+        raise Minisign::PasswordMissingError, 'Missing password for encrypted key'
+      end
+      return unless @ed25519_public_key_bytes != ed25519_signing_key.verify_key.to_bytes.bytes
+
+      raise Minisign::PasswordIncorrectError, 'Wrong password for that key'
     end
 
     def key_data(password, bytes)
