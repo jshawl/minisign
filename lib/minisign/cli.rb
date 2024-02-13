@@ -120,15 +120,19 @@ module Minisign
       File.write(options[:x], signature)
     end
 
+    # rubocop:disable Metrics/AbcSize
     def self.verify(options)
       options[:x] ||= "#{options[:m]}.minisig"
       options[:p] ||= './minisign.pub'
       options[:P] ||= File.read(options[:p])
-      # TODO: -q / -Q
       public_key = Minisign::PublicKey.new(options[:P])
       signature = Minisign::Signature.new(File.read(options[:x]))
-      puts public_key.verify(signature, File.read(options[:m]))
+      verification = public_key.verify(signature, File.read(options[:m]))
+      return if options[:q]
+
+      puts options[:Q] ? signature.trusted_comment : verification
     end
+    # rubocop:enable Metrics/AbcSize
   end
 end
 
