@@ -23,4 +23,19 @@ describe 'e2e' do
     public_key = File.read("#{path}/#{keyname}.pub").split("\n").pop
     expect(output.gsub('+', '')).to match("minisign -Vm <file> -P #{public_key}".gsub('+', ''))
   end
+  it 'signs files' do
+    path = 'test/generated'
+    trusted_comment = SecureRandom.uuid
+    command = "echo 'password' | minisign -Sm #{path}/.keep -s test/minisign.key -t #{trusted_comment}"
+    `#{command}`
+    ruby_signature = File.read("#{path}/.keep.minisig")
+    command = "echo 'password' | #{path}/minisign -Sm #{path}/.keep -s test/minisign.key -t #{trusted_comment}"
+    `#{command}`
+    jedisct1_signature = File.read("#{path}/.keep.minisig")
+    expect(ruby_signature).to eq(jedisct1_signature)
+  end
+  it 'verifies files' do
+    command = "minisign -Vm #{path}/.keep -p test/minisign.pub"
+    expect(`#{command}`).to match(/Signature and comment signature verified\nTrusted comment: [a-z0-9-]+/)
+  end
 end
