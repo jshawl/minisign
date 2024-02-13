@@ -111,5 +111,17 @@ describe Minisign::CLI do
         Minisign::CLI.verify(options)
       end.not_to raise_error
     end
+    it 'outputs the message' do
+      options = {
+        p: 'test/minisign.pub',
+        m: 'test/example.txt',
+        o: true
+      }
+      jedisct1 = "test/generated/minisign -Vom #{options[:m]} -p #{options[:p]}"
+      ruby = "minisign -Vom #{options[:m]} -p #{options[:p]}"
+      message = File.read(options[:m])
+      expect(`#{ruby}`).to eq(message)
+      expect(`#{ruby}`).to eq(`#{jedisct1}`)
+    end
   end
 end
