@@ -8,7 +8,7 @@ describe 'e2e' do
   end
   it 'generates a key pair' do
     path = 'test/generated/cli'
-    keyname = 'jedisct1-encrypted'
+    keyname = 'ruby-encrypted'
     exe = 'minisign'
     password = SecureRandom.uuid
     # TODO: prompt a second time for password confirmation
