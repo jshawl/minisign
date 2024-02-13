@@ -92,7 +92,7 @@ module Minisign
       begin
         # try without a password first
         private_key = Minisign::PrivateKey.new(private_key_contents)
-      rescue RuntimeError
+      rescue Minisign::PasswordMissingError
         print 'Password: '
         private_key = Minisign::PrivateKey.new(private_key_contents, prompt)
       end
