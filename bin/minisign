@@ -9,7 +9,7 @@ Signal.trap('INT') { exit }
 
 options = {}
 op = OptionParser.new do |opts|
-  boolean_opts = %w[G R C W S V Q f q]
+  boolean_opts = %w[G R C W S V Q f q o]
   argument_opts = %w[t m x s p]
   boolean_opts.each do |o|
     opts.on("-#{o}") do |boolean|

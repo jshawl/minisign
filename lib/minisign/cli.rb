@@ -23,7 +23,6 @@ module Minisign
       puts '-S                sign files'
       puts '-V                verify that a signature is valid for a given file'
       puts '-m <file>         file to sign/verify'
-      # TODO: implement
       puts '-o                combined with -V, output the file content after verification'
       puts '-p <pubkey_file>  public key file (default: ./minisign.pub)'
       puts '-P <pubkey>       public key, as a base64 string'
@@ -126,9 +125,11 @@ module Minisign
       options[:p] ||= './minisign.pub'
       options[:P] ||= File.read(options[:p])
       public_key = Minisign::PublicKey.new(options[:P])
+      message = File.read(options[:m])
       signature = Minisign::Signature.new(File.read(options[:x]))
-      verification = public_key.verify(signature, File.read(options[:m]))
+      verification = public_key.verify(signature, message)
       return if options[:q]
+      return puts message if options[:o]
 
       puts options[:Q] ? signature.trusted_comment : verification
     end
