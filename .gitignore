@@ -4,3 +4,4 @@ doc
 test/generated/*
 !test/generated/.keep
 !test/generated/cli/.keep
+*.gem

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+gem build minisign.gemspec
+gem install *.gem
+
 if [[ "$OSTYPE" == "darwin"* ]]; then
     url="https://github.com/jedisct1/minisign/releases/download/0.11/minisign-0.11-macos.zip"
     curl -sL $url -o test/generated/minisign.zip

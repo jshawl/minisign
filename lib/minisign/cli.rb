@@ -2,38 +2,47 @@
 
 require 'io/console'
 
+# rubocop:disable Metrics/ModuleLength
 module Minisign
   # The command line interface
   module CLI
+    # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
-    def self.help
-      puts '-G                  generate a new key pair'
-      puts '-R                  recreate a public key file from a secret key file'
-      puts '-C                  change/remove the password of the secret key'
-      puts '-S                  sign files'
-      puts '-f                  force. Combined with -G, overwrite a previous key pair'
-      puts '-p                  <pubkey_file> public key file (default: ./minisign.pub)'
-      puts '-s                  <seckey_file> secret key file (default: ~/.minisign/minisign.key)'
-      puts '-W                  do not encrypt/decrypt the secret key with a password'
-      puts '-p                  <pubkey_file> public key file (default: ./minisign.pub)'
-      puts '-P                  <pubkey> public key, as a base64 string'
-      puts '-x                  <sigfile> signature file (default: <file>.minisig)'
-    end
-    # rubocop:enable Metrics/MethodLength
-
     def self.usage
       puts 'Usage:'
       puts 'minisign -G [-f] [-p pubkey_file] [-s seckey_file] [-W]'
       puts 'minisign -R [-s seckey_file] [-p pubkey_file]'
       puts 'minisign -C [-s seckey_file] [-W]'
-      # rubocop:disable Layout/LineLength
-      puts 'minisign -S [-l] [-x sig_file] [-s seckey_file] [-c untrusted_comment] [-t trusted_comment] -m file [file ...]'
-      # rubocop:enable Layout/LineLength
+      puts 'minisign -S [-l] [-x sig_file] [-s seckey_file] [-c untrusted_comment]'
+      puts '            [-t trusted_comment] -m file [file ...]'
       puts 'minisign -V [-H] [-x sig_file] [-p pubkey_file | -P pubkey] [-o] [-q] -m file'
+      puts ''
+      puts '-G                generate a new key pair'
+      puts '-R                recreate a public key file from a secret key file'
+      puts '-C                change/remove the password of the secret key'
+      puts '-S                sign files'
+      puts '-V                verify that a signature is valid for a given file'
+      puts '-m <file>         file to sign/verify'
+      # TODO: implement
+      puts '-o                combined with -V, output the file content after verification'
+      puts '-p <pubkey_file>  public key file (default: ./minisign.pub)'
+      puts '-P <pubkey>       public key, as a base64 string'
+      puts '-s <seckey_file>  secret key file (default: ~/.minisign/minisign.key)'
+      puts '-W                do not encrypt/decrypt the secret key with a password'
+      puts '-x <sigfile>      signature file (default: <file>.minisig)'
+      puts '-c <comment>      add a one-line untrusted comment'
+      puts '-t <comment>      add a one-line trusted comment'
+      puts '-q                quiet mode, suppress output'
+      puts '-Q                pretty quiet mode, only print the trusted comment'
+      puts '-f                force. Combined with -G, overwrite a previous key pair'
+      puts '-v                display version number'
+      puts ''
     end
+    # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/AbcSize
 
     def self.prompt
-      $stdin.noecho(&:gets).chomp
+      $stdin.tty? ? $stdin.noecho(&:gets).chomp : $stdin.gets.chomp
     end
 
     def self.prevent_overwrite!(file)
@@ -65,8 +74,12 @@ module Minisign
         print "\nDeriving a key from the password in order to encrypt the secret key..."
         keypair = Minisign::KeyPair.new(password)
         File.write(secret_key, keypair.private_key)
-        File.write(public_key, keypair.public_key)
         print " done\n"
+        puts "The secret key was saved as #{options[:s]} - Keep it secret!"
+        File.write(public_key, keypair.public_key)
+        puts "The public key was saved as #{options[:p]} - That one can be public."
+        pubkey = keypair.public_key.to_s.split("\n").pop
+        puts "minisign -Vm <file> -P #{pubkey}"
       end
     end
     # rubocop:enable Metrics/MethodLength
@@ -118,3 +131,5 @@ module Minisign
     end
   end
 end
+
+# rubocop:enable Metrics/ModuleLength

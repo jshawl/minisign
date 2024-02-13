@@ -28,8 +28,6 @@ begin
   raise OptionParser::InvalidOption if options.keys.empty?
 rescue OptionParser::InvalidOption
   Minisign::CLI.usage
-  puts ''
-  Minisign::CLI.help
   exit 1
 end
 
