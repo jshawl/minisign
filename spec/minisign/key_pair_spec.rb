@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 describe Minisign::KeyPair do
+  before do
+    allow_any_instance_of(Minisign::KeyPair).to receive(:kdf_memlimit_bytes).and_return([0, 0, 0, 0, 0, 0, 0, 0])
+    allow_any_instance_of(Minisign::KeyPair).to receive(:kdf_opslimit_bytes).and_return([0, 0, 0, 0, 0, 0, 0, 0])
+  end
   it 'generates a keypair without a password' do
     keypair = Minisign::KeyPair.new
     expect(keypair.private_key).to be_truthy

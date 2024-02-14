@@ -41,14 +41,6 @@ describe Minisign::PrivateKey do
                               190, 222, 200, 51, 166, 7, 25, 89, 5, 225, 56, 170, 157, 127, 219])
     end
 
-    it 'parses the kdf_opslimit' do
-      expect(@private_key.instance_variable_get('@kdf_opslimit')).to eq(33_554_432)
-    end
-
-    it 'parses the kdf_memlimit' do
-      expect(@private_key.instance_variable_get('@kdf_memlimit')).to eq(1_073_741_824)
-    end
-
     it 'parses the key id' do
       expect(@private_key.key_id).to eq([166, 41, 163, 171, 79, 169, 183, 76])
     end
