@@ -7,6 +7,8 @@ describe Minisign::CLI do
         p: 'test/minisign.pub',
         s: 'test/minisign.key'
       }
+      allow_any_instance_of(Minisign::KeyPair).to receive(:kdf_memlimit_bytes).and_return([0, 0, 0, 0, 0, 0, 0, 0])
+      allow_any_instance_of(Minisign::KeyPair).to receive(:kdf_opslimit_bytes).and_return([0, 0, 0, 0, 0, 0, 0, 0])
     end
     it 'does not overwrite existing keys' do
       expect do
