@@ -38,7 +38,6 @@ module Minisign
       puts ''
     end
     # rubocop:enable Metrics/MethodLength
-    # rubocop:enable Metrics/AbcSize
 
     def self.prompt
       $stdin.tty? ? $stdin.noecho(&:gets).chomp : $stdin.gets.chomp
@@ -55,7 +54,6 @@ module Minisign
       exit 1
     end
 
-    # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
     def self.generate(options)
       secret_key = options[:s] || "#{Dir.home}/.minisign/minisign.key"
@@ -82,7 +80,6 @@ module Minisign
       end
     end
     # rubocop:enable Metrics/MethodLength
-    # rubocop:enable Metrics/AbcSize
 
     def self.recreate(options)
       secret_key = options[:s] || "#{Dir.home}/.minisign/minisign.key"
@@ -112,14 +109,16 @@ module Minisign
       # TODO: multiple files
       options[:x] ||= "#{options[:m]}.minisig"
       options[:s] ||= "#{Dir.home}/.minisign/minisign.key"
-      print 'Password: '
-      # TODO: unencrypted private keys shouldn't prompt
-      private_key = Minisign::PrivateKey.new(File.read(options[:s]), prompt)
+      private_key = begin
+        Minisign::PrivateKey.new(File.read(options[:s]))
+      rescue Minisign::PasswordMissingError
+        print 'Password: '
+        Minisign::PrivateKey.new(File.read(options[:s]), prompt)
+      end
       signature = private_key.sign(options[:m], File.read(options[:m]), options[:t])
       File.write(options[:x], signature)
     end
 
-    # rubocop:disable Metrics/AbcSize
     def self.verify(options)
       options[:x] ||= "#{options[:m]}.minisig"
       options[:p] ||= './minisign.pub'

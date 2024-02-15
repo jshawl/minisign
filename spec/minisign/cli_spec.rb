@@ -84,6 +84,23 @@ describe Minisign::CLI do
   end
 
   describe '.sign' do
+    it "doesn't prompt for a password if the key is unencrypted" do
+      expect(Minisign::CLI).not_to receive(:prompt)
+      options = {
+        s: 'test/unencrypted.key',
+        c: 'the untrusted comment',
+        t: 'the trusted comment',
+        m: 'test/generated/.keep'
+      }
+      system(
+        "test/generated/minisign -Sm test/generated/.keep -s #{options[:s]} -t '#{options[:t]}'"
+      )
+      jedisct1_signature = File.read('test/generated/.keep.minisig')
+      File.delete('test/generated/.keep.minisig')
+      Minisign::CLI.sign(options)
+      signature = File.read('test/generated/.keep.minisig')
+      expect(jedisct1_signature).to eq(signature)
+    end
     it 'signs a file' do
       allow(Minisign::CLI).to receive(:prompt).and_return('password')
       options = {
