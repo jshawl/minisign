@@ -95,8 +95,12 @@ module Minisign
 
     def self.change_password(options)
       options[:s] ||= "#{Dir.home}/.minisign/minisign.key"
-      print 'Password: '
-      private_key = Minisign::PrivateKey.new(File.read(options[:s]), prompt)
+      private_key = begin
+        Minisign::PrivateKey.new(File.read(options[:s]))
+      rescue Minisign::PasswordMissingError
+        print 'Password: '
+        Minisign::PrivateKey.new(File.read(options[:s]), prompt)
+      end
       print 'New Password: '
       new_password = options[:W] ? nil : prompt
       private_key.change_password! new_password

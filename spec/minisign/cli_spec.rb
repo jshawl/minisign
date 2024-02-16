@@ -72,7 +72,18 @@ describe Minisign::CLI do
       end.not_to raise_error
     end
 
-    it 'changes the password for the private key without a password'
+    it 'changes the password for the private key without a password' do
+      FileUtils.cp('test/unencrypted.key', 'test/generated/unencrypted.key')
+      new_password = SecureRandom.uuid
+      options = {
+        s: 'test/generated/unencrypted.key'
+      }
+      allow(Minisign::CLI).to receive(:prompt).and_return(new_password)
+      Minisign::CLI.change_password(options)
+      expect do
+        Minisign::PrivateKey.new(File.read(options[:s]), new_password)
+      end.not_to raise_error
+    end
 
     it 'removes the password for the private key' do
       allow(Minisign::CLI).to receive(:prompt).and_return(@old_password)
