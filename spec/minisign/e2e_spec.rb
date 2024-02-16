@@ -43,5 +43,10 @@ describe 'e2e' do
     command = "minisign -Vm #{path}/.keep -p test/minisign.pub -q"
     expect(`#{command}`).to eq('')
   end
-  it 'shows an error message when the signature is invalid'
+  it 'shows an error message when the signature is invalid' do
+    command = 'minisign -Vm test/example.txt -x test/example.txt.minisig.unverifiable -p test/minisign.pub'
+    expect(`#{command}`).to match(/Signature verification failed/)
+    command = 'minisign -Vm test/example.txt -x test/example.txt.minisig.tampered -p test/minisign.pub'
+    expect(`#{command}`).to match(/Signature verification failed/)
+  end
 end
