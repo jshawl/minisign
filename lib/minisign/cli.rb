@@ -8,6 +8,7 @@ module Minisign
   module CLI
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
+    # rubocop:disable Metrics/CyclomaticComplexity
     def self.usage
       puts 'Usage:'
       puts 'minisign -G [-f] [-p pubkey_file] [-s seckey_file] [-W]'
@@ -37,7 +38,6 @@ module Minisign
       puts '-v                display version number'
       puts ''
     end
-    # rubocop:enable Metrics/MethodLength
 
     def self.prompt
       $stdin.tty? ? $stdin.noecho(&:gets).chomp : $stdin.gets.chomp
@@ -54,7 +54,6 @@ module Minisign
       exit 1
     end
 
-    # rubocop:disable Metrics/MethodLength
     def self.generate(options)
       secret_key = options[:s] || "#{Dir.home}/.minisign/minisign.key"
       public_key = options[:p] || './minisign.pub'
@@ -79,7 +78,6 @@ module Minisign
         puts "minisign -Vm <file> -P #{pubkey}"
       end
     end
-    # rubocop:enable Metrics/MethodLength
 
     def self.recreate(options)
       secret_key = options[:s] || "#{Dir.home}/.minisign/minisign.key"
@@ -126,13 +124,20 @@ module Minisign
       public_key = Minisign::PublicKey.new(options[:P])
       message = File.read(options[:m])
       signature = Minisign::Signature.new(File.read(options[:x]))
-      verification = public_key.verify(signature, message)
+      begin
+        verification = public_key.verify(signature, message)
+      rescue StandardError
+        puts 'Signature verification failed'
+        exit 1
+      end
       return if options[:q]
       return puts message if options[:o]
 
       puts options[:Q] ? signature.trusted_comment : verification
     end
+    # rubocop:enable Metrics/CyclomaticComplexity
     # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/MethodLength
   end
 end
 
