@@ -78,7 +78,11 @@ describe Minisign::PrivateKey do
     it 'signs a file' do
       @filename = 'encrypted-key.txt'
       @message = SecureRandom.uuid
-      signature = @private_key.sign(@filename, @message, 'this is a trusted comment')
+      trusted_comment = 'this is a trusted comment'
+      untrusted_comment = 'this is an untrusted comment'
+      signature = @private_key.sign(@filename, @message, trusted_comment, untrusted_comment)
+      expect(signature.to_s).to match(trusted_comment)
+      expect(signature.to_s).to match(untrusted_comment)
       @public_key = Minisign::PublicKey.new('RWSmKaOrT6m3TGwjwBovgOmlhSbyBUw3hyhnSOYruHXbJa36xHr8rq2M')
       expect(@public_key.verify(signature, @message)).to match('Signature and comment signature verified')
       File.write("test/generated/#{@filename}", @message)

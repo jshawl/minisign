@@ -103,9 +103,10 @@ describe Minisign::CLI do
         t: 'the trusted comment',
         m: 'test/generated/.keep'
       }
-      system(
-        "test/generated/minisign -Sm test/generated/.keep -s #{options[:s]} -t '#{options[:t]}'"
-      )
+      # rubocop:disable Layout/LineLength
+      command = "test/generated/minisign -Sm test/generated/.keep -s #{options[:s]} -c '#{options[:c]}' -t '#{options[:t]}'"
+      # rubocop:enable Layout/LineLength
+      system(command)
       jedisct1_signature = File.read('test/generated/.keep.minisig')
       File.delete('test/generated/.keep.minisig')
       Minisign::CLI.sign(options)
@@ -121,7 +122,9 @@ describe Minisign::CLI do
         m: 'test/generated/.keep'
       }
       system(
-        "echo 'password' | test/generated/minisign -Sm test/generated/.keep -s test/minisign.key -t '#{options[:t]}'"
+        # rubocop:disable Layout/LineLength
+        "echo 'password' | test/generated/minisign -Sm #{options[:m]} -s #{options[:s]} -t '#{options[:t]}' -c '#{options[:c]}'"
+        # rubocop:enable Layout/LineLength
       )
       jedisct1_signature = File.read('test/generated/.keep.minisig')
       File.delete('test/generated/.keep.minisig')

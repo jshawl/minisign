@@ -35,19 +35,19 @@ module Minisign
     #
     # @param filename [String] The filename to be used in the trusted comment section
     # @param message [String] The file's contents
-    # @param comment [String] An optional trusted comment to be included in the signature
+    # @param trusted_comment [String] An optional trusted comment to be included in the signature
+    # @param untrusted_comment [String] An optional untrusted comment
     # @return [Minisign::Signature]
-    def sign(filename, message, comment = nil)
+    def sign(filename, message, trusted_comment = nil, untrusted_comment = nil)
       signature = ed25519_signing_key.sign(blake2b512(message))
-      trusted_comment = comment || "timestamp:#{Time.now.to_i}\tfile:#{filename}\thashed"
+      trusted_comment ||= "timestamp:#{Time.now.to_i}\tfile:#{filename}\thashed"
+      untrusted_comment ||= 'signature from minisign secret key'
       global_signature = ed25519_signing_key.sign("#{signature}#{trusted_comment}")
-      # TODO: allow setting an untrusted comment, too
       Minisign::Signature.new([
-        'untrusted comment: signature from minisign secret key',
+        "untrusted comment: #{untrusted_comment}",
         Base64.strict_encode64("ED#{@key_id.pack('C*')}#{signature}"),
         "trusted comment: #{trusted_comment}",
-        Base64.strict_encode64(global_signature),
-        ''
+        "#{Base64.strict_encode64(global_signature)}\n"
       ].join("\n"))
     end
 
