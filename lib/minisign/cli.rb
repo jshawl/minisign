@@ -123,7 +123,7 @@ module Minisign
         print 'Password: '
         Minisign::PrivateKey.new(File.read(options[:s]), prompt)
       end
-      signature = private_key.sign(options[:m], File.read(options[:m]), options[:t])
+      signature = private_key.sign(options[:m], File.read(options[:m]), options[:t], options[:c])
       File.write(options[:x], signature)
     end
 
