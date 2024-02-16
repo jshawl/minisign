@@ -11,8 +11,7 @@ describe 'e2e' do
     keyname = 'ruby-encrypted'
     exe = 'minisign'
     password = SecureRandom.uuid
-    # TODO: prompt a second time for password confirmation
-    command = "echo '#{password}' | #{exe} -G -p #{path}/#{keyname}.pub -s #{path}/#{keyname}.key"
+    command = "echo '#{password}\n#{password}' | #{exe} -G -p #{path}/#{keyname}.pub -s #{path}/#{keyname}.key"
     `#{command}`
     # prompt -f
     expect(`#{command} 2>&1`).to match('Key generation aborted:')
@@ -22,6 +21,8 @@ describe 'e2e' do
     expect(output).to match("The public key was saved as #{path}/#{keyname}.pub - That one can be public.")
     public_key = File.read("#{path}/#{keyname}.pub").split("\n").pop
     expect(output.gsub('+', '')).to match("minisign -Vm <file> -P #{public_key}".gsub('+', ''))
+    command = "echo '#{password}\nnottherightpassword' | #{exe} -G -p #{path}/#{keyname}.pub -s #{path}/#{keyname}.key"
+    expect(`#{command} -f 2>&1`).to match("Passwords don't match")
   end
   it 'signs files' do
     path = 'test/generated'
