@@ -67,6 +67,12 @@ module Minisign
       else
         print 'Password: '
         password = prompt
+        print "\nPassword (one more time): "
+        password_confirmation = prompt
+        if password != password_confirmation
+          puts "\nPasswords don't match"
+          exit 1
+        end
         print "\nDeriving a key from the password in order to encrypt the secret key..."
         keypair = Minisign::KeyPair.new(password)
         File.write(secret_key, keypair.private_key)
