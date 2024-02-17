@@ -6,9 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2024-02-17
+
 ### Added
 - Support for changing or removing the password from the private key
 - `minisign` executable
+- `Minisign::PrivateKey#sign` adds a new optional `untrusted_comment` argument
+- Custom error classes:
+  - `Minisign::SignatureVerificationError`
+  - `Minisign::PasswordMissingError`
+  - `Minisign::PasswordIncorrectError`
+
+### Changed
+- `Minisign::PublicKey#verify` now raises `Minisign::SignatureVerificationError` instead of `Ed25519::VerifyError` and specifies whether the global signature or the comment signature failed to verify
+- `Minisign::PrivateKey` now raises `Minisign::PasswordMissingError` or `Minisign::PasswordIncorrectError` instead of `RuntimeError`
 
 ## [0.1.0] - 2024-02-09
 
@@ -45,7 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - This CHANGELOG file to hopefully serve as an evolving example of a
   standardized open source project CHANGELOG.
 
-[Unreleased]: https://github.com/jshawl/minisign/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/jshawl/minisign/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/jshawl/minisign/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/jshawl/minisign/compare/v0.0.8...v0.1.0
 [0.0.8]: https://github.com/jshawl/minisign/compare/v0.0.7...v0.0.8
 [0.0.7]: https://github.com/jshawl/minisign/compare/v0.0.6...v0.0.7

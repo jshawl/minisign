@@ -1,6 +1,6 @@
 # Minisign
 
-A rubygem for creating and verifying [Minisign](http://jedisct1.github.io/minisign/) signatures.
+A ruby implemenation of [Minisign](http://jedisct1.github.io/minisign/).
 
 - [Installation \& Usage](#installation--usage)
   - [Read a public key](#read-a-public-key)
@@ -57,7 +57,9 @@ private_key.change_password! nil
 ```rb
 file_path = "example.txt"
 password = "password"
-signature = private_key.sign(file_path, File.read(file_path))
+trusted_comment = "the trusted comment"
+untrusted_comment = "the untrusted comment"
+signature = private_key.sign(file_path, File.read(file_path), trusted_comment, untrusted_comment)
 File.write("#{file_path}.minisig", signature.to_s)
 ```
 

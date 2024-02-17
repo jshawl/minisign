@@ -5,6 +5,10 @@ module Minisign
   class KeyPair
     include Minisign::Utils
 
+    # Create a new key pair
+    # @param password [String] The password used to encrypt the private key
+    # @example
+    #   Minisign::KeyPair.new("53cr3t P4s5w0rd")
     def initialize(password = nil)
       @password = password
       @key_id = SecureRandom.bytes(8)
