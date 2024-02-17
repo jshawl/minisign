@@ -4,11 +4,15 @@ require 'io/console'
 
 # rubocop:disable Metrics/ModuleLength
 module Minisign
-  # The command line interface
+  # The command line interface.
+  # This module is _not_ intended for library usage and is subject to
+  # breaking changes.
   module CLI
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
     # rubocop:disable Metrics/CyclomaticComplexity
+
+    # Command line usage
     def self.usage
       puts 'Usage:'
       puts 'minisign -G [-f] [-p pubkey_file] [-s seckey_file] [-W]'
@@ -145,6 +149,7 @@ module Minisign
 
       puts options[:Q] ? signature.trusted_comment : verification
     end
+
     # rubocop:enable Metrics/CyclomaticComplexity
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/MethodLength
