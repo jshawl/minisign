@@ -29,9 +29,9 @@ module Minisign
     # @param signature [Minisign::Signature]
     # @param message [String] the content that was signed
     # @return [String] the trusted comment
-    # @raise Ed25519::VerifyError on invalid signatures
-    # @raise RuntimeError on tampered trusted comments
-    # @raise RuntimeError on mismatching key ids
+    # @raise Minisign::SignatureVerificationError on invalid signatures
+    # @raise Minisign::SignatureVerificationError on tampered trusted comments
+    # @raise Minisign::SignatureVerificationError on mismatching key ids
     def verify(signature, message)
       assert_matching_key_ids!(signature.key_id, key_id)
       verify_message_signature(signature.signature, message)
