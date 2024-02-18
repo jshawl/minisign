@@ -13,7 +13,7 @@ describe Minisign::PublicKey do
     @signature = Minisign::Signature.new(File.read('test/example.txt.minisig.unverifiable'))
     expect do
       @pk.verify(@signature, @message)
-    end.to raise_error(Minisign::SignatureVerificationError, 'signature verification failed!')
+    end.to raise_error(Minisign::SignatureVerificationError, 'Signature verification failed')
   end
   it 'verifies trusted comments' do
     @signature = Minisign::Signature.new(File.read('test/example.txt.minisig.tampered'))

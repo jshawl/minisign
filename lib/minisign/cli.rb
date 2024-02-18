@@ -122,8 +122,8 @@ module Minisign
       signature = Minisign::Signature.new(File.read(options[:x]))
       begin
         verification = public_key.verify(signature, message)
-      rescue StandardError
-        puts 'Signature verification failed'
+      rescue Minisign::SignatureVerificationError => e
+        puts e.message
         exit 1
       end
       return if options[:q]

@@ -54,8 +54,8 @@ module Minisign
 
     def verify_message_signature(signature, message)
       ed25519_verify_key.verify(signature, blake2b512(message))
-    rescue Ed25519::VerifyError => e
-      raise Minisign::SignatureVerificationError, e
+    rescue Ed25519::VerifyError
+      raise Minisign::SignatureVerificationError, 'Signature verification failed'
     end
 
     def untrusted_comment
