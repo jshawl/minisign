@@ -41,6 +41,7 @@ module Minisign
       puts '-f                force. Combined with -G, overwrite a previous key pair'
       puts '-v                display version number'
       puts ''
+      exit 1
     end
 
     def self.prompt

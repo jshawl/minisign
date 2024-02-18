@@ -1,6 +1,13 @@
 # frozen_string_literal: true
 
 describe Minisign::CLI do
+  describe '.usage' do
+    it 'prints usage info and exits 1' do
+      expect do
+        Minisign::CLI.usage
+      end.to raise_error(SystemExit)
+    end
+  end
   describe '.generate' do
     before do
       @options = {
