@@ -21,7 +21,7 @@ module Minisign
     #   public_key.key_id
     #   #=> "E86FECED695E8E0"
     def key_id
-      key_id_binary_string.bytes.map { |c| c.to_s(16) }.reverse.join.upcase
+      hex key_id_binary_string.bytes
     end
 
     # Verify a message's signature
