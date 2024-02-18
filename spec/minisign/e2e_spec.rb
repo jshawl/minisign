@@ -48,6 +48,6 @@ describe 'e2e' do
     command = 'minisign -Vm test/example.txt -x test/example.txt.minisig.unverifiable -p test/minisign.pub'
     expect(`#{command}`).to match(/Signature verification failed/)
     command = 'minisign -Vm test/example.txt -x test/example.txt.minisig.tampered -p test/minisign.pub'
-    expect(`#{command}`).to match(/Signature verification failed/)
+    expect(`#{command}`).to match(/Comment signature verification failed/)
   end
 end

@@ -41,6 +41,7 @@ module Minisign
       puts '-f                force. Combined with -G, overwrite a previous key pair'
       puts '-v                display version number'
       puts ''
+      exit 1
     end
 
     def self.prompt
@@ -90,44 +91,25 @@ module Minisign
     end
 
     def self.recreate(options)
-      secret_key = options[:s] || "#{Dir.home}/.minisign/minisign.key"
+      options[:s] ||= "#{Dir.home}/.minisign/minisign.key"
       public_key = options[:p] || './minisign.pub'
-      private_key_contents = File.read(secret_key)
-      begin
-        # try without a password first
-        private_key = Minisign::PrivateKey.new(private_key_contents)
-      rescue Minisign::PasswordMissingError
-        print 'Password: '
-        private_key = Minisign::PrivateKey.new(private_key_contents, prompt)
-      end
-      File.write(public_key, private_key.public_key)
+      File.write(public_key, private_key(options[:s]).public_key)
     end
 
     def self.change_password(options)
       options[:s] ||= "#{Dir.home}/.minisign/minisign.key"
-      private_key = begin
-        Minisign::PrivateKey.new(File.read(options[:s]))
-      rescue Minisign::PasswordMissingError
-        print 'Password: '
-        Minisign::PrivateKey.new(File.read(options[:s]), prompt)
-      end
+      new_private_key = private_key(options[:s])
       print 'New Password: '
       new_password = options[:W] ? nil : prompt
-      private_key.change_password! new_password
-      File.write(options[:s], private_key)
+      new_private_key.change_password! new_password
+      File.write(options[:s], new_private_key)
     end
 
     def self.sign(options)
       # TODO: multiple files
       options[:x] ||= "#{options[:m]}.minisig"
       options[:s] ||= "#{Dir.home}/.minisign/minisign.key"
-      private_key = begin
-        Minisign::PrivateKey.new(File.read(options[:s]))
-      rescue Minisign::PasswordMissingError
-        print 'Password: '
-        Minisign::PrivateKey.new(File.read(options[:s]), prompt)
-      end
-      signature = private_key.sign(options[:m], File.read(options[:m]), options[:t], options[:c])
+      signature = private_key(options[:s]).sign(options[:m], File.read(options[:m]), options[:t], options[:c])
       File.write(options[:x], signature)
     end
 
@@ -140,14 +122,24 @@ module Minisign
       signature = Minisign::Signature.new(File.read(options[:x]))
       begin
         verification = public_key.verify(signature, message)
-      rescue StandardError
-        puts 'Signature verification failed'
+      rescue Minisign::SignatureVerificationError => e
+        puts e.message
         exit 1
       end
       return if options[:q]
       return puts message if options[:o]
 
       puts options[:Q] ? signature.trusted_comment : verification
+    end
+
+    def self.private_key(seckey_file)
+      seckey_file_contents = File.read(seckey_file)
+      begin
+        Minisign::PrivateKey.new(seckey_file_contents)
+      rescue Minisign::PasswordMissingError
+        print 'Password: '
+        Minisign::PrivateKey.new(seckey_file_contents, prompt)
+      end
     end
 
     # rubocop:enable Metrics/CyclomaticComplexity

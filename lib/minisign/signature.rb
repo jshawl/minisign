@@ -3,11 +3,13 @@
 module Minisign
   # Parse a .minisig file's contents
   class Signature
+    include Utils
     # @param str [String] The contents of the .minisig file
     # @example
     #   Minisign::Signature.new(File.read('test/example.txt.minisig'))
     def initialize(str)
       @lines = str.split("\n")
+      @decoded = Base64.strict_decode64(@lines[1])
     end
 
     # @return [String] the key id
@@ -15,7 +17,7 @@ module Minisign
     #   Minisign::Signature.new(File.read('test/example.txt.minisig')).key_id
     #   #=> "E86FECED695E8E0"
     def key_id
-      encoded_signature[2..9].bytes.map { |c| c.to_s(16) }.reverse.join.upcase
+      hex @decoded[2..9].bytes
     end
 
     # @return [String] the trusted comment
@@ -33,18 +35,12 @@ module Minisign
 
     # @return [String] the global signature
     def signature
-      encoded_signature[10..]
+      @decoded[10..]
     end
 
     # @return [String] The signature that can be written to a file
     def to_s
       "#{@lines.join("\n")}\n"
-    end
-
-    private
-
-    def encoded_signature
-      Base64.decode64(@lines[1])
     end
   end
 end

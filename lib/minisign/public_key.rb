@@ -21,7 +21,7 @@ module Minisign
     #   public_key.key_id
     #   #=> "E86FECED695E8E0"
     def key_id
-      key_id_binary_string.bytes.map { |c| c.to_s(16) }.reverse.join.upcase
+      hex key_id_binary_string.bytes
     end
 
     # Verify a message's signature
@@ -29,9 +29,9 @@ module Minisign
     # @param signature [Minisign::Signature]
     # @param message [String] the content that was signed
     # @return [String] the trusted comment
-    # @raise Ed25519::VerifyError on invalid signatures
-    # @raise RuntimeError on tampered trusted comments
-    # @raise RuntimeError on mismatching key ids
+    # @raise Minisign::SignatureVerificationError on invalid signatures
+    # @raise Minisign::SignatureVerificationError on tampered trusted comments
+    # @raise Minisign::SignatureVerificationError on mismatching key ids
     def verify(signature, message)
       assert_matching_key_ids!(signature.key_id, key_id)
       verify_message_signature(signature.signature, message)
@@ -54,8 +54,8 @@ module Minisign
 
     def verify_message_signature(signature, message)
       ed25519_verify_key.verify(signature, blake2b512(message))
-    rescue Ed25519::VerifyError => e
-      raise Minisign::SignatureVerificationError, e
+    rescue Ed25519::VerifyError
+      raise Minisign::SignatureVerificationError, 'Signature verification failed'
     end
 
     def untrusted_comment

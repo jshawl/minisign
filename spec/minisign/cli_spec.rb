@@ -1,6 +1,13 @@
 # frozen_string_literal: true
 
 describe Minisign::CLI do
+  describe '.usage' do
+    it 'prints usage info and exits 1' do
+      expect do
+        Minisign::CLI.usage
+      end.to raise_error(SystemExit)
+    end
+  end
   describe '.generate' do
     before do
       @options = {
@@ -17,7 +24,6 @@ describe Minisign::CLI do
     end
     it 'does not prompt for a password if -W' do
       keyname = SecureRandom.uuid
-      SecureRandom.uuid
       options = {
         p: "test/generated/cli/#{keyname}.pub",
         s: "test/generated/cli/#{keyname}.key",
@@ -25,6 +31,19 @@ describe Minisign::CLI do
       }
       expect(Minisign::CLI).not_to receive(:prompt)
       Minisign::CLI.generate(options)
+    end
+    it 'prints an error message if the passwords dont match' do
+      password = SecureRandom.uuid
+      password_confirmation = SecureRandom.uuid
+      keyname = SecureRandom.uuid
+      options = {
+        p: "test/generated/cli/#{keyname}.pub",
+        s: "test/generated/cli/#{keyname}.key"
+      }
+      allow(Minisign::CLI).to receive(:prompt).and_return(password, password_confirmation)
+      expect do
+        Minisign::CLI.generate(options)
+      end.to raise_error(SystemExit)
     end
     it 'writes the key files' do
       keyname = SecureRandom.uuid
@@ -143,6 +162,16 @@ describe Minisign::CLI do
       expect do
         Minisign::CLI.verify(options)
       end.not_to raise_error
+    end
+    it 'prints an error message' do
+      options = {
+        p: 'test/minisign.pub',
+        m: 'test/example.txt',
+        x: 'test/example.txt.minisig.tampered'
+      }
+      expect do
+        Minisign::CLI.verify(options)
+      end.to raise_error(SystemExit)
     end
     it 'outputs the message' do
       options = {
