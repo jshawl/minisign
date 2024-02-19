@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Make `libsodium` dependency optional for consumers who want to verify signatures _only_
+
 ## [0.2.1] - 2024-02-19
 
 ### Added
