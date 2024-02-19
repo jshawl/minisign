@@ -9,4 +9,7 @@ module Minisign
 
   class PasswordIncorrectError < StandardError
   end
+
+  class LibSodiumDependencyError < StandardError
+  end
 end
