@@ -31,11 +31,9 @@ rescue OptionParser::InvalidOption
   exit 1
 end
 
-if options[:G] || options[:R] || options[:G] || options[:S]
-  unless defined? RbNaCl::Hash
-    STDERR.puts "Error: libsodium is not installed!"
-    exit 1
-  end
+if (options[:G] || options[:R] || options[:G] || options[:S]) && !defined? RbNaCl::Hash
+  warn 'Error: libsodium is not installed!'
+  exit 1
 end
 
 Minisign::CLI.generate(options) if options[:G]

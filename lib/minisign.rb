@@ -4,9 +4,9 @@ require 'ed25519'
 require 'base64'
 require 'openssl'
 begin
-    require 'rbnacl'
-rescue LoadError => e
-    # errors handled when invoked (see Minisign::NaCl)
+  require 'rbnacl'
+rescue LoadError
+  # errors handled when invoked (see Minisign::NaCl)
 end
 
 require 'minisign/cli'
