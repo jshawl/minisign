@@ -3,9 +3,9 @@
 module Minisign
   # A module that invokes RbNaCl with user-focused actionable error messages.
   module NaCl
-    def self.safely
-      yield
-    rescue NameError
+    def self.assert_libsodium_dependency_met!
+      return if RbNaCl.const_defined?(:PasswordHash)
+
       raise Minisign::LibSodiumDependencyError, 'libsodium is not installed!'
     end
 
@@ -13,9 +13,8 @@ module Minisign
       # see RbNaCl::Hash::Blake2b
       module Blake2b
         def self.digest(*args)
-          NaCl.safely do
-            RbNaCl::Hash::Blake2b.digest(*args)
-          end
+          NaCl.assert_libsodium_dependency_met!
+          RbNaCl::Hash::Blake2b.digest(*args)
         end
       end
     end
@@ -23,9 +22,8 @@ module Minisign
     # see RbNaCl::PasswordHash
     module PasswordHash
       def self.scrypt(*args)
-        NaCl.safely do
-          RbNaCl::PasswordHash.scrypt(*args)
-        end
+        NaCl.assert_libsodium_dependency_met!
+        RbNaCl::PasswordHash.scrypt(*args)
       end
     end
   end
