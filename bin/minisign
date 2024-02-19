@@ -31,6 +31,11 @@ rescue OptionParser::InvalidOption
   exit 1
 end
 
+if (options[:G] || options[:R] || options[:C] || options[:S]) && !RbNaCl.const_defined?(:PasswordHash)
+  warn 'Error: libsodium is not installed!'
+  exit 1
+end
+
 Minisign::CLI.generate(options) if options[:G]
 Minisign::CLI.recreate(options) if options[:R]
 Minisign::CLI.change_password(options) if options[:C]

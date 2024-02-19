@@ -19,6 +19,9 @@ A ruby implemenation of [Minisign](http://jedisct1.github.io/minisign/).
 gem install minisign
 ```
 
+**Note**: This gem has a conditional dependency on [`libsodium`](https://doc.libsodium.org/) for the functionality related to key derivation and signature creation.
+Signature verification _does not_ need `libsodium`.
+
 ### Read a public key
 
 ```rb
